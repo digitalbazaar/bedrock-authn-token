@@ -1,0 +1,36 @@
+{
+  "name": "bedrock-authn-token",
+  "version": "0.1.0-0",
+  "description": "Simple token-based authentication for Bedrock apps",
+  "main": "./lib",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitalbazaar/bedrock-authn-token"
+  },
+  "keywords": [
+    "bedrock"
+  ],
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "http://digitalbazaar.com"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/bedrock-authn-token/issues"
+  },
+  "homepage": "https://github.com/digitalbazaar/bedrock-authn-token",
+  "dependencies": {
+    "assert-plus": "^1.0.0",
+    "bcrypt": "^2.0.1"
+  },
+  "peerDependencies": {
+    "bedrock": "^1.0.0",
+    "bedrock-account": "digitalbazaar/bedrock-account#implementation",
+    "bedrock-mongodb": "3.x - 5.x",
+    "bedrock-permission": "^2.2.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  }
+}
