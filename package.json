@@ -25,8 +25,8 @@
     "bcrypt": "^2.0.1"
   },
   "peerDependencies": {
-    "bedrock": "^1.0.0",
-    "bedrock-account": "digitalbazaar/bedrock-account#implementation",
+    "bedrock": "^1.12.1",
+    "bedrock-account": "^1.0.0",
     "bedrock-mongodb": "3.x - 5.x",
     "bedrock-permission": "^2.2.0"
   },
