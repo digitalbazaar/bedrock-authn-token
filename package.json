@@ -21,7 +21,7 @@
   "homepage": "https://github.com/digitalbazaar/bedrock-authn-token",
   "dependencies": {
     "assert-plus": "^1.0.0",
-    "bcrypt": "^2.0.1"
+    "bcrypt": "kelektiv/node.bcrypt.js#bbf0099fecaffc7c9553dba5d4b4311e2f98fe47"
   },
   "peerDependencies": {
     "bedrock": "^1.12.1",
