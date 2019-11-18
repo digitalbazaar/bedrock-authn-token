@@ -24,9 +24,9 @@
     "bcrypt": "kelektiv/node.bcrypt.js#bbf0099fecaffc7c9553dba5d4b4311e2f98fe47"
   },
   "peerDependencies": {
-    "bedrock": "^1.12.1",
+    "bedrock": "1.12.1 - 3.x",
     "bedrock-account": "^1.0.0",
-    "bedrock-mongodb": "3.x - 5.x",
+    "bedrock-mongodb": "3.x - 6.x",
     "bedrock-permission": "^2.2.0"
   },
   "directories": {
