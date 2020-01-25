@@ -1,5 +1,7 @@
 # bedrock-authn-token ChangeLog
 
+## 1.1.1 - 2020-01-24
+
 ### Fixed
 - Fix dependency typo.
 
