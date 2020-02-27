@@ -1,0 +1,18 @@
+{
+  "name": "bedrock-authn-token-test",
+  "version": "0.0.1-0",
+  "private": true,
+  "scripts": {
+    "test": "node --preserve-symlinks test.js test"
+  },
+  "dependencies": {
+    "bedrock": "^3.0.0",
+    "bedrock-account": "^2.0.0",
+    "bedrock-authn-token": "file:..",
+    "bedrock-identity": "^7.0.0",
+    "bedrock-mongodb": "^6.0.0",
+    "bedrock-permission": "^2.5.4",
+    "bedrock-test": "^5.0.0",
+    "bedrock-validation": "^4.2.0"
+  }
+}
