@@ -13,6 +13,7 @@
     "bedrock-mongodb": "^6.0.0",
     "bedrock-permission": "^2.5.4",
     "bedrock-test": "^5.0.0",
-    "bedrock-validation": "^4.2.0"
+    "bedrock-validation": "^4.2.0",
+    "otplib": "^12.0.1"
   }
 }
