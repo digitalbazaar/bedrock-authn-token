@@ -11,6 +11,8 @@ const {totp} = require('otplib');
 
 describe('TOTP API', () => {
   describe('set', () => {
+    // NOTE: the accounts collection is getting erased before each test
+    // this allows for the creation of tokens using the same account info
     beforeEach(async () => {
       await helpers.prepareDatabase(mockData);
     });
@@ -33,6 +35,35 @@ describe('TOTP API', () => {
       result.type.should.equal('totp');
       should.exist(result.secret);
       result.secret.should.be.a('string');
+      should.exist(result.otpAuthUrl);
+      result.otpAuthUrl.should.be.a('string');
+      result.otpAuthUrl.startsWith('otpauth://totp/').should.be.true;
+    });
+    it('should set a secret with a clientId', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      const clientId = 'someWebsite';
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          clientId,
+          type: 'totp',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      result.type.should.equal('totp');
+      should.exist(result.secret);
+      result.secret.should.be.a('string');
+      should.exist(result.otpAuthUrl);
+      result.otpAuthUrl.should.be.a('string');
+      result.otpAuthUrl.startsWith(`otpauth://totp/${clientId}:`)
+        .should.be.true;
     });
     it('should not set a secret if one already exists', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
