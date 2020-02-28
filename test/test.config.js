@@ -12,3 +12,15 @@ config.mongodb.dropCollections.onInit = true;
 config.mongodb.dropCollections.collections = [];
 
 config.mocha.tests.push(path.join(__dirname, 'mocha'));
+
+const {permissions, roles} = config.permission;
+roles['bedrock-test.regular'] = {
+  id: 'bedrock-test.regular',
+  label: 'Account Test Role',
+  comment: 'Role for Test User',
+  sysPermission: [
+    permissions.ACCOUNT_ACCESS.id,
+    permissions.ACCOUNT_UPDATE.id,
+    permissions.ACCOUNT_INSERT.id,
+  ]
+};

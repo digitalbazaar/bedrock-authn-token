@@ -3,6 +3,7 @@
  */
 const bedrock = require('bedrock');
 require('bedrock-authn-token');
+require('bedrock-permission');
 
 require('bedrock-test');
 bedrock.start();
