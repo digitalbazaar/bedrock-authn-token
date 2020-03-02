@@ -108,7 +108,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should verify a valid token', async () => {
-      const totpToken = totp.generate(secret);
+      const challenge = totp.generate(secret);
       let err;
       let result;
       try {
@@ -116,7 +116,7 @@ describe('TOTP API', () => {
           account: accountId,
           actor,
           type: 'totp',
-          totpToken,
+          challenge,
         });
       } catch(e) {
         err = e;
@@ -130,8 +130,8 @@ describe('TOTP API', () => {
       });
     });
     it('should not verify an invalid token', async () => {
-      // an invalid random totpToken string
-      const totpToken = '91bc2849-2f43-4847-b5ad-01c0436b3a07';
+      // an invalid random challenge string
+      const challenge = '91bc2849-2f43-4847-b5ad-01c0436b3a07';
       let err;
       let result;
       try {
@@ -139,7 +139,7 @@ describe('TOTP API', () => {
           account: accountId,
           actor,
           type: 'totp',
-          totpToken,
+          challenge,
         });
       } catch(e) {
         err = e;
@@ -170,7 +170,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should delete a secret', async () => {
-      let totpToken = totp.generate(secret);
+      let challenge = totp.generate(secret);
       let err;
       let result;
       try {
@@ -178,7 +178,7 @@ describe('TOTP API', () => {
           account: accountId,
           actor,
           type: 'totp',
-          totpToken,
+          challenge,
         });
       } catch(e) {
         err = e;
@@ -205,7 +205,7 @@ describe('TOTP API', () => {
       should.not.exist(err);
 
       // attempt to validate the TOTP token again
-      totpToken = totp.generate(secret);
+      challenge = totp.generate(secret);
       err = null;
       result = null;
       try {
@@ -213,7 +213,7 @@ describe('TOTP API', () => {
           account: accountId,
           actor,
           type: 'totp',
-          totpToken,
+          challenge,
         });
       } catch(e) {
         err = e;
