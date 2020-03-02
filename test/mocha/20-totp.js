@@ -7,7 +7,7 @@ const brAccount = require('bedrock-account');
 const brAuthnToken = require('bedrock-authn-token');
 const helpers = require('./helpers.js');
 const mockData = require('./mock.data');
-const {totp} = require('otplib');
+const {authenticator} = require('otplib');
 
 describe('TOTP API', () => {
   describe('set', () => {
@@ -108,7 +108,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should verify a valid token', async () => {
-      const challenge = totp.generate(secret);
+      const challenge = authenticator.generate(secret);
       let err;
       let result;
       try {
@@ -170,7 +170,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should delete a secret', async () => {
-      let challenge = totp.generate(secret);
+      let challenge = authenticator.generate(secret);
       let err;
       let result;
       try {
@@ -205,7 +205,7 @@ describe('TOTP API', () => {
       should.not.exist(err);
 
       // attempt to validate the TOTP token again
-      challenge = totp.generate(secret);
+      challenge = authenticator.generate(secret);
       err = null;
       result = null;
       try {
