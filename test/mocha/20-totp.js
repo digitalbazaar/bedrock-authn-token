@@ -39,17 +39,17 @@ describe('TOTP API', () => {
       result.otpAuthUrl.should.be.a('string');
       result.otpAuthUrl.startsWith('otpauth://totp/').should.be.true;
     });
-    it('should set a secret with a clientId', async () => {
+    it('should set a secret with a serviceId', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const actor = await brAccount.getCapabilities({id: accountId});
-      const clientId = 'someWebsite';
+      const serviceId = 'someWebsite';
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
           account: accountId,
           actor,
-          clientId,
+          serviceId,
           type: 'totp',
         });
       } catch(e) {
@@ -62,7 +62,7 @@ describe('TOTP API', () => {
       result.secret.should.be.a('string');
       should.exist(result.otpAuthUrl);
       result.otpAuthUrl.should.be.a('string');
-      result.otpAuthUrl.startsWith(`otpauth://totp/${clientId}:`)
+      result.otpAuthUrl.startsWith(`otpauth://totp/${serviceId}:`)
         .should.be.true;
     });
     it('should not set a secret if one already exists', async () => {
