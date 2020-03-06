@@ -1,5 +1,9 @@
 # bedrock-authn-token ChangeLog
 
+### Added
+- `totp.window` config option to increase time step window. Default to accept
+  codes 1 time step in past and future.
+
 ## 1.2.0 - 2020-03-04
 
 ### Added
