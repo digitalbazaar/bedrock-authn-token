@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 1.4.0 - 2020-04-09
+
+### Changed
+- Use bcrypt@4 that includes pre-built binaries for Node.js 12.
+
 ## 1.3.0 - 2020-03-05
 
 ### Added
