@@ -1,5 +1,11 @@
 # bedrock-authn-token ChangeLog
 
+## 1.5.0 -
+
+### Changed
+- Use mongo driver 3.5 api.
+- Upgrade bedrock-mongodb to ^7.0.0.
+
 ## 1.4.0 - 2020-04-09
 
 ### Changed
