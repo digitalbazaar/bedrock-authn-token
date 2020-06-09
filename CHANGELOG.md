@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 2.0.0 -
+## 2.0.0 - 2020-06-09
 
 ### Changed
 - **BREAKING**: Use mongo driver 3.5 api.
