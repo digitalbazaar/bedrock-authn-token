@@ -30,9 +30,9 @@
   },
   "peerDependencies": {
     "bedrock": "1.12.1 - 3.x",
-    "bedrock-account": "^2.3.0",
-    "bedrock-mongodb": "3.x - 7.x",
-    "bedrock-permission": "^2.6.0"
+    "bedrock-account": "^3.0.0",
+    "bedrock-mongodb": "^7.0.0",
+    "bedrock-permission": "^3.0.0"
   },
   "directories": {
     "lib": "./lib"
