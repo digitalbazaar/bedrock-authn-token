@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 2.1.0 - TBD
+
+### Changed
+- Use bcrypt@5.
+
 ## 2.0.0 - 2020-06-09
 
 ### Changed
