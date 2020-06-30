@@ -1,5 +1,11 @@
 # bedrock-authn-token ChangeLog
 
+## 2.2.0 - 2020-06-29
+
+### Changed
+- Use bedrock-account@4.
+- Update test deps.
+
 ## 2.1.0 - 2020-06-18
 
 ### Changed
