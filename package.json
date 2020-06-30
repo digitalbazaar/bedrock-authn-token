@@ -4,7 +4,7 @@
   "description": "Simple token-based authentication for Bedrock apps",
   "main": "./lib",
   "scripts": {
-    "lint": "eslint lib test"
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
