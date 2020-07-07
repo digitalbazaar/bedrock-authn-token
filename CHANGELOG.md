@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 2.2.1 - 2020-07-07
+
+### Fixed
+- Fix usage of the MongoDB projection API.
+
 ## 2.2.0 - 2020-06-29
 
 ### Changed
