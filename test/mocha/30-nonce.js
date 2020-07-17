@@ -5,7 +5,7 @@
 
 const brAccount = require('bedrock-account');
 const brAuthnToken = require('bedrock-authn-token');
-const helpers = require('./helpers.js');
+const {prepareDatabase} = require('./helpers.js');
 const mockData = require('./mock.data');
 
 describe('Nonce API', () => {
@@ -13,7 +13,7 @@ describe('Nonce API', () => {
     // NOTE: the accounts collection is getting erased before each test
     // this allows for the creation of tokens using the same account info
     beforeEach(async () => {
-      await helpers.prepareDatabase(mockData);
+      await prepareDatabase(mockData);
     });
     it('should set a challenge', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
@@ -35,5 +35,70 @@ describe('Nonce API', () => {
       should.exist(result.challenge);
       result.challenge.should.be.a('string');
     });
+    it('should set a challenge of length 6 if "entryStyle" is not given',
+      async () => {
+        const accountId = mockData.accounts['alpha@example.com'].account.id;
+        const actor = await brAccount.getCapabilities({id: accountId});
+        let result;
+        let err;
+        try {
+          result = await brAuthnToken.set({
+            account: accountId,
+            actor,
+            type: 'nonce',
+          });
+        } catch(e) {
+          err = e;
+        }
+        assertNoError(err);
+        should.exist(result);
+        result.should.be.an('object');
+        result.challenge.should.be.an('string');
+        result.challenge.length.should.equal(6);
+      });
+    it('should set a challenge of length 6 if "entryStyle" is "human"',
+      async () => {
+        const accountId = mockData.accounts['alpha@example.com'].account.id;
+        const actor = await brAccount.getCapabilities({id: accountId});
+        let result;
+        let err;
+        try {
+          result = await brAuthnToken.set({
+            account: accountId,
+            actor,
+            type: 'nonce',
+            entryStyle: 'human'
+          });
+        } catch(e) {
+          err = e;
+        }
+        assertNoError(err);
+        should.exist(result);
+        result.should.be.an('object');
+        result.challenge.should.be.an('string');
+        result.challenge.length.should.equal(6);
+      });
+    it('should set a challenge of length 32 if "entryStyle" is "machine"',
+      async () => {
+        const accountId = mockData.accounts['alpha@example.com'].account.id;
+        const actor = await brAccount.getCapabilities({id: accountId});
+        let result;
+        let err;
+        try {
+          result = await brAuthnToken.set({
+            account: accountId,
+            actor,
+            type: 'nonce',
+            entryStyle: 'machine'
+          });
+        } catch(e) {
+          err = e;
+        }
+        assertNoError(err);
+        should.exist(result);
+        result.should.be.an('object');
+        result.challenge.should.be.an('string');
+        result.challenge.length.should.equal(32);
+      });
   });
 });
