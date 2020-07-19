@@ -25,6 +25,7 @@
   "dependencies": {
     "assert-plus": "^1.0.0",
     "bcrypt": "^5.0.0",
+    "bnid": "^2.0.0",
     "fast-json-patch": "^3.0.0-1",
     "otplib": "^12.0.1"
   },
