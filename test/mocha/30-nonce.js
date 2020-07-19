@@ -35,7 +35,7 @@ describe('Nonce API', () => {
       should.exist(result.challenge);
       result.challenge.should.be.a('string');
     });
-    it('should set a challenge of length 6 if "entryStyle" is not given',
+    it('should set a challenge of length 9 if "typeOptions" is not given',
       async () => {
         const accountId = mockData.accounts['alpha@example.com'].account.id;
         const actor = await brAccount.getCapabilities({id: accountId});
@@ -54,9 +54,9 @@ describe('Nonce API', () => {
         should.exist(result);
         result.should.be.an('object');
         result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(6);
+        result.challenge.length.should.equal(9);
       });
-    it('should set a challenge of length 6 if "entryStyle" is "human"',
+    it('should set a challenge of length 9 if "typeOptions" is "human"',
       async () => {
         const accountId = mockData.accounts['alpha@example.com'].account.id;
         const actor = await brAccount.getCapabilities({id: accountId});
@@ -67,7 +67,7 @@ describe('Nonce API', () => {
             account: accountId,
             actor,
             type: 'nonce',
-            entryStyle: 'human'
+            typeOptions: 'human'
           });
         } catch(e) {
           err = e;
@@ -76,9 +76,9 @@ describe('Nonce API', () => {
         should.exist(result);
         result.should.be.an('object');
         result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(6);
+        result.challenge.length.should.equal(9);
       });
-    it('should set a challenge of length 32 if "entryStyle" is "machine"',
+    it('should set a challenge of length 23 if "typeOptions" is "machine"',
       async () => {
         const accountId = mockData.accounts['alpha@example.com'].account.id;
         const actor = await brAccount.getCapabilities({id: accountId});
@@ -89,7 +89,7 @@ describe('Nonce API', () => {
             account: accountId,
             actor,
             type: 'nonce',
-            entryStyle: 'machine'
+            typeOptions: 'machine'
           });
         } catch(e) {
           err = e;
@@ -98,7 +98,7 @@ describe('Nonce API', () => {
         should.exist(result);
         result.should.be.an('object');
         result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(32);
+        result.challenge.length.should.equal(23);
       });
   });
 });
