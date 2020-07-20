@@ -56,49 +56,73 @@ describe('Nonce API', () => {
         result.challenge.should.be.an('string');
         result.challenge.length.should.equal(9);
       });
-    it('should set a challenge of length 9 if "typeOptions" is "human"',
-      async () => {
-        const accountId = mockData.accounts['alpha@example.com'].account.id;
-        const actor = await brAccount.getCapabilities({id: accountId});
-        let result;
-        let err;
-        try {
-          result = await brAuthnToken.set({
-            account: accountId,
-            actor,
-            type: 'nonce',
-            typeOptions: 'human'
-          });
-        } catch(e) {
-          err = e;
-        }
-        assertNoError(err);
-        should.exist(result);
-        result.should.be.an('object');
-        result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(9);
-      });
-    it('should set a challenge of length 23 if "typeOptions" is "machine"',
-      async () => {
-        const accountId = mockData.accounts['alpha@example.com'].account.id;
-        const actor = await brAccount.getCapabilities({id: accountId});
-        let result;
-        let err;
-        try {
-          result = await brAuthnToken.set({
-            account: accountId,
-            actor,
-            type: 'nonce',
-            typeOptions: 'machine'
-          });
-        } catch(e) {
-          err = e;
-        }
-        assertNoError(err);
-        should.exist(result);
-        result.should.be.an('object');
-        result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(23);
-      });
+    it('should set a challenge of length 9 if "typeOptions.entryStyle" is ' +
+      'set to "human"',
+    async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          typeOptions: {entryStyle: 'human'}
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      result.should.be.an('object');
+      result.challenge.should.be.an('string');
+      result.challenge.length.should.equal(9);
+    });
+    it('should set a challenge of length 23 if "typeOptions.entryStyle" is ' +
+      'set to "machine"',
+    async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          typeOptions: {entryStyle: 'machine'}
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      result.should.be.an('object');
+      result.challenge.should.be.an('string');
+      result.challenge.length.should.equal(23);
+    });
+    it('should throw error if "typeOptions.entryStyle" is neither "human" ' +
+      'nor "machine"',
+    async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          typeOptions: {entryStyle: 'not-machine-or-human'}
+        });
+      } catch(e) {
+        err = e;
+      }
+      should.exist(err);
+      should.not.exist(result);
+      err.message.should.equal('Invalid "entryStyle" "not-machine-or-human"; ' +
+        '"entryStyle" must be "human" or "machine".');
+    });
   });
 });
