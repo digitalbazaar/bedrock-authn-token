@@ -53,8 +53,9 @@ describe('Nonce API', () => {
         assertNoError(err);
         should.exist(result);
         result.should.be.an('object');
-        result.challenge.should.be.an('string');
-        result.challenge.length.should.equal(9);
+        result.should.have.keys(['type', 'challenge']);
+        result.challenge.should.be.a('string');
+        result.challenge.should.match(/^\d{9}$/);
       });
     it('should set a challenge of length 9 if "typeOptions.entryStyle" is ' +
       'set to "human"',
@@ -76,8 +77,9 @@ describe('Nonce API', () => {
       assertNoError(err);
       should.exist(result);
       result.should.be.an('object');
-      result.challenge.should.be.an('string');
-      result.challenge.length.should.equal(9);
+      result.should.have.keys(['type', 'challenge']);
+      result.challenge.should.be.a('string');
+      result.challenge.should.match(/^\d{9}$/);
     });
     it('should set a challenge of length 23 if "typeOptions.entryStyle" is ' +
       'set to "machine"',
@@ -99,8 +101,9 @@ describe('Nonce API', () => {
       assertNoError(err);
       should.exist(result);
       result.should.be.an('object');
-      result.challenge.should.be.an('string');
-      result.challenge.length.should.equal(23);
+      result.should.have.keys(['type', 'challenge']);
+      result.challenge.should.be.a('string');
+      result.challenge.should.match(/^[A-Za-z0-9]{23}$/);
     });
     it('should throw error if "typeOptions.entryStyle" is neither "human" ' +
       'nor "machine"',
