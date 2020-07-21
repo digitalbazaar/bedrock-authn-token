@@ -127,5 +127,52 @@ describe('Nonce API', () => {
       err.message.should.equal('Invalid "entryStyle" "not-machine-or-human"; ' +
         '"entryStyle" must be "human" or "machine".');
     });
+    it('should generate a new nonce if one already exists', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let err;
+      let result1;
+      // create a new nonce token
+      const nonce1 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      try {
+        result1 = await brAuthnToken.get({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result1);
+      should.exist(nonce1);
+
+      // create another nonce token
+      const nonce2 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+
+      let result2;
+      try {
+        result2 = await brAuthnToken.get({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result1);
+      should.exist(nonce2);
+      result1.should.not.eql(result2);
+      nonce1.challenge.should.not.equal(nonce2.challenge);
+    });
   });
 });
