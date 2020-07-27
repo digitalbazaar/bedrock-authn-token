@@ -139,7 +139,7 @@ describe('Nonce API', () => {
         type: 'nonce',
       });
       try {
-        result1 = await brAuthnToken.get({
+        result = await brAuthnToken.getAll({
           account: accountId,
           actor,
           type: 'nonce',
@@ -168,11 +168,88 @@ describe('Nonce API', () => {
       } catch(e) {
         err = e;
       }
-      assertNoError(err);
-      should.exist(result1);
-      should.exist(nonce2);
-      result1.should.not.eql(result2);
-      nonce1.challenge.should.not.equal(nonce2.challenge);
+      should.not.exist(nonce6);
+      should.exist(err);
+      err.name.should.equal('NotAllowedError');
+      err.message.should.equal('Existing tokens exceeds maxNonceCount of 5.');
     });
+  });
+});
+
+describe('Remove expired nonce', () => {
+  // NOTE: the accounts collection is getting erased before each test
+  // this allows for the creation of tokens using the same account info
+  beforeEach(async () => {
+    await prepareDatabase(mockData);
+  });
+  it('should remove an expired nonce', async () => {
+    const accountId = mockData.accounts['alpha@example.com'].account.id;
+    const actor = await brAccount.getCapabilities({id: accountId});
+    // set a token with an older date.
+    const dateStub = sinon.stub(Date, 'now').callsFake(() => {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return yesterday;
+    });
+    let nonce1;
+    let err;
+    try {
+      nonce1 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(nonce1);
+    // undo the stub
+    dateStub.restore();
+
+    let result1;
+    // get all existing nonce for the account, it should give exactly one nonce
+    // which is expired.
+    try {
+      result1 = await brAuthnToken.getAll({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(result1);
+    let nonce2;
+    // create a new nonce token for the same account
+    try {
+      nonce2 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(nonce2);
+
+    let result2;
+    // get all existing nonce tokens for the account again.
+    // since one of the tokens is expired, it gets deleted when nonce2 is set
+    // and so, in result2 we should get only one nonce(which is nonce2).
+    try {
+      result2 = await brAuthnToken.getAll({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(result2);
+    result2.length.should.equal(1);
   });
 });
