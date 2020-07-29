@@ -4,7 +4,6 @@ module.exports = {
   },
   extends: [
     'digitalbazaar',
-    'eslint-config-digitalbazaar',
     'digitalbazaar/jsdoc'
   ],
   root: true,
