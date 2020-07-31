@@ -127,19 +127,75 @@ describe('Nonce API', () => {
       err.message.should.equal('Invalid "entryStyle" "not-machine-or-human"; ' +
         '"entryStyle" must be "human" or "machine".');
     });
-    it('should generate a new nonce if one already exists', async () => {
+    it('should throw error if email or account is not given', async () => {
+      const accountId = '';
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      should.exist(err);
+      should.not.exist(result);
+      err.message.should.equal('Either "account" or "email" must be provided.');
+    });
+    it('should throw error if both email and account is given', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const email = 'someEmail@email.com';
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          email
+        });
+      } catch(e) {
+        err = e;
+      }
+      should.exist(err);
+      should.not.exist(result);
+      err.message.should.equal('Only "account" or "email" must be given.');
+    });
+    it('should throw error if maxNonceCount is  greater than 5', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const actor = await brAccount.getCapabilities({id: accountId});
       let err;
-      let result1;
-      // create a new nonce token
+      // create five nonce tokens
       const nonce1 = await brAuthnToken.set({
         account: accountId,
         actor,
         type: 'nonce',
       });
+      const nonce2 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      const nonce3 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      const nonce4 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      should.exist(nonce1);
+      should.exist(nonce2);
+      should.exist(nonce3);
+      should.exist(nonce4);
+      let nonce5;
       try {
-        result = await brAuthnToken.getAll({
+        nonce5 = await brAuthnToken.set({
           account: accountId,
           actor,
           type: 'nonce',
@@ -147,20 +203,14 @@ describe('Nonce API', () => {
       } catch(e) {
         err = e;
       }
-      assertNoError(err);
-      should.exist(result1);
-      should.exist(nonce1);
+      should.exist(nonce5);
+      should.not.exist(err);
 
-      // create another nonce token
-      const nonce2 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-
-      let result2;
+      // try to create another nonce token when other 5 nonces hasn't expired
+      // it should throw an error.
+      let nonce6;
       try {
-        result2 = await brAuthnToken.get({
+        nonce6 = await brAuthnToken.set({
           account: accountId,
           actor,
           type: 'nonce',
