@@ -173,6 +173,38 @@ describe('Nonce API', () => {
       err.name.should.equal('NotAllowedError');
       err.message.should.equal('Existing tokens exceeds maxNonceCount of 5.');
     });
+    it('should get a nonce with an "id"', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      // create two nonces
+      const nonce1 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      should.exist(nonce1);
+      nonce1.should.have.keys(['challenge', 'id', 'type']);
+      nonce1.type.should.equal('nonce');
+      const nonce2 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      should.exist(nonce2);
+      nonce2.should.have.keys(['challenge', 'id', 'type']);
+      nonce2.type.should.equal('nonce');
+
+      // get nonce1 using its id, the result of get should have the same id as
+      // nonce1
+      const result = await brAuthnToken.get({
+        account: accountId,
+        actor,
+        type: 'nonce',
+        id: nonce1.id
+      });
+      should.exist(result);
+      result.id.should.equal(nonce1.id);
+    });
   });
 });
 
