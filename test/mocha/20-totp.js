@@ -87,6 +87,25 @@ describe('TOTP API', () => {
       should.not.exist(result);
       should.exist(err);
     });
+    it('should throw error if account is not given for types except nonce',
+      async () => {
+        const accountId = mockData.accounts['alpha@example.com'].account.id;
+        const actor = await brAccount.getCapabilities({id: accountId});
+        let result;
+        let err;
+        try {
+          result = await brAuthnToken.set({
+            actor,
+            type: 'totp',
+            email: 'alpha@example.com'
+          });
+        } catch(e) {
+          err = e;
+        }
+        should.exist(err);
+        should.not.exist(result);
+        err.message.should.equal('"account" must be given.');
+      });
   }); // end set
 
   describe('verify', () => {
