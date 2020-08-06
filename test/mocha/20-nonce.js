@@ -7,6 +7,7 @@ const brAccount = require('bedrock-account');
 const brAuthnToken = require('bedrock-authn-token');
 const {prepareDatabase} = require('./helpers.js');
 const mockData = require('./mock.data');
+const sinon = require('sinon');
 
 describe('Nonce API', () => {
   describe('set', () => {
@@ -53,7 +54,7 @@ describe('Nonce API', () => {
         assertNoError(err);
         should.exist(result);
         result.should.be.an('object');
-        result.should.have.keys(['type', 'challenge']);
+        result.should.have.keys(['type', 'id', 'challenge']);
         result.challenge.should.be.a('string');
         result.challenge.should.match(/^\d{9}$/);
       });
@@ -77,7 +78,7 @@ describe('Nonce API', () => {
       assertNoError(err);
       should.exist(result);
       result.should.be.an('object');
-      result.should.have.keys(['type', 'challenge']);
+      result.should.have.keys(['type', 'id', 'challenge']);
       result.challenge.should.be.a('string');
       result.challenge.should.match(/^\d{9}$/);
     });
@@ -101,7 +102,7 @@ describe('Nonce API', () => {
       assertNoError(err);
       should.exist(result);
       result.should.be.an('object');
-      result.should.have.keys(['type', 'challenge']);
+      result.should.have.keys(['type', 'id', 'challenge']);
       result.challenge.should.be.a('string');
       result.challenge.should.match(/^[A-Za-z0-9]{23}$/);
     });
@@ -126,6 +127,45 @@ describe('Nonce API', () => {
       should.not.exist(result);
       err.message.should.equal('Invalid "entryStyle" "not-machine-or-human"; ' +
         '"entryStyle" must be "human" or "machine".');
+    });
+    it('should generate an array of nonce', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      let err;
+      // create three new nonce tokens
+      const nonce1 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      const nonce2 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      const nonce3 = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      let result;
+      try {
+        result = await brAuthnToken.getAll({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      should.exist(nonce1);
+      should.exist(nonce2);
+      should.exist(nonce3);
+      should.exist(result);
+      result.should.be.an('array');
+      result.length.should.equal(3);
     });
     it('should throw error if email or account is not given', async () => {
       const accountId = '';
@@ -205,7 +245,6 @@ describe('Nonce API', () => {
       }
       should.exist(nonce5);
       should.not.exist(err);
-
       // try to create another nonce token when other 5 nonces hasn't expired
       // it should throw an error.
       let nonce6;
@@ -243,7 +282,6 @@ describe('Nonce API', () => {
       should.exist(nonce2);
       nonce2.should.have.keys(['challenge', 'id', 'type']);
       nonce2.type.should.equal('nonce');
-
       // get nonce1 using its id, the result of get should have the same id as
       // nonce1
       const result = await brAuthnToken.get({
@@ -257,7 +295,6 @@ describe('Nonce API', () => {
     });
   });
 });
-
 describe('Remove expired nonce', () => {
   // NOTE: the accounts collection is getting erased before each test
   // this allows for the creation of tokens using the same account info
@@ -288,7 +325,6 @@ describe('Remove expired nonce', () => {
     should.exist(nonce1);
     // undo the stub
     dateStub.restore();
-
     let result1;
     // get all existing nonce for the account, it should give exactly one nonce
     // which is expired.
@@ -316,7 +352,6 @@ describe('Remove expired nonce', () => {
     }
     assertNoError(err);
     should.exist(nonce2);
-
     let result2;
     // get all existing nonce tokens for the account again.
     // since one of the tokens is expired, it gets deleted when nonce2 is set
