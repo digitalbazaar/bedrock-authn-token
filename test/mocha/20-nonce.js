@@ -260,7 +260,7 @@ describe('Nonce API', () => {
       should.not.exist(nonce6);
       should.exist(err);
       err.name.should.equal('NotAllowedError');
-      err.message.should.equal('Existing tokens exceeds maxNonceCount of 5.');
+      err.message.should.equal('Tokens exceeds maxNonceCount of 5.');
     });
     it('should get a nonce with an "id"', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
