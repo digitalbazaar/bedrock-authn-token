@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "bedrock": "^3.1.1",
-    "bedrock-account": "^4.0.0",
+    "bedrock-account": "github:digitalbazaar/bedrock-account#unique-email-field",
     "bedrock-authn-token": "file:..",
     "bedrock-mongodb": "^7.1.0",
     "bedrock-permission": "^3.0.0",
