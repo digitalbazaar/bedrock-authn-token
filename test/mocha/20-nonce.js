@@ -308,7 +308,7 @@ describe('Remove expired nonce', () => {
     const dateStub = sinon.stub(Date, 'now').callsFake(() => {
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      return yesterday;
+      return Date.parse(yesterday);
     });
     let nonce1;
     let err;
@@ -323,11 +323,8 @@ describe('Remove expired nonce', () => {
     }
     assertNoError(err);
     should.exist(nonce1);
-    // undo the stub
-    dateStub.restore();
+    // get all existing nonce for the account, it should give exactly one
     let result1;
-    // get all existing nonce for the account, it should give exactly one nonce
-    // which is expired.
     try {
       result1 = await brAuthnToken.getAll({
         account: accountId,
@@ -339,23 +336,16 @@ describe('Remove expired nonce', () => {
     }
     assertNoError(err);
     should.exist(result1);
-    let nonce2;
-    // create a new nonce token for the same account
-    try {
-      nonce2 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-    } catch(e) {
-      err = e;
-    }
-    assertNoError(err);
-    should.exist(nonce2);
+    result1.should.be.an('array');
+    result1[0].should.have.keys([
+      'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
+      'sha256', 'expires'
+    ]);
+    // undo the date stub
+    dateStub.restore();
+    // get all existing nonce for the same account again after undoing the stub,
+    // it should give an empty array as getAll drops any expired token.
     let result2;
-    // get all existing nonce tokens for the account again.
-    // since one of the tokens is expired, it gets deleted when nonce2 is set
-    // and so, in result2 we should get only one nonce(which is nonce2).
     try {
       result2 = await brAuthnToken.getAll({
         account: accountId,
@@ -367,6 +357,6 @@ describe('Remove expired nonce', () => {
     }
     assertNoError(err);
     should.exist(result2);
-    result2.length.should.equal(1);
+    result2.should.eql([]);
   });
 });
