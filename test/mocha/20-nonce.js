@@ -295,6 +295,101 @@ describe('Nonce API', () => {
       result.id.should.equal(nonce1.id);
     });
   });
+  describe('verify', () => {
+    // NOTE: the accounts collection is getting erased before each test
+    // this allows for the creation of tokens using the same account info
+    beforeEach(async () => {
+      await prepareDatabase(mockData);
+    });
+    it('should verify a valid nonce', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      // set a nonce for the account
+      const nonce = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      should.exist(nonce);
+      nonce.should.have.keys(['type', 'id', 'challenge']);
+      // getAll nonce for the account
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.getAll({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      result.should.be.an('array');
+      result[0].should.have.keys([
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
+        'sha256', 'expires'
+      ]);
+      // get challenge from nonce and hash it using the same salt
+      const challenge = nonce.challenge;
+      const hash = await bcrypt.hash(challenge, result[0].salt);
+      // verify the nonce token
+      let verifyResult;
+      let err2;
+      try {
+        verifyResult = await brAuthnToken.verify({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          challenge,
+          hash
+        });
+      } catch(e) {
+        err2 = e;
+      }
+      assertNoError(err2);
+      should.exist(verifyResult);
+      verifyResult.should.eql({
+        id: accountId,
+        email: 'alpha@example.com',
+        token: {type: 'nonce', authenticationMethod: 'nonce'}
+      });
+    });
+    it('should return false if a different hash is passed', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      // set a nonce for the account
+      const nonce = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce',
+      });
+      should.exist(nonce);
+      nonce.should.have.keys(['type', 'id', 'challenge']);
+
+      const challenge = nonce.challenge;
+      // make a different hash
+      const hash = await bcrypt.hash(challenge, 10);
+      // verify the nonce token
+      let verifyResult;
+      let err;
+      try {
+        verifyResult = await brAuthnToken.verify({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          challenge,
+          hash
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(verifyResult);
+      verifyResult.should.equal(false);
+    });
+  });
 });
 describe('Remove expired nonce', () => {
   // NOTE: the accounts collection is getting erased before each test
@@ -359,67 +454,5 @@ describe('Remove expired nonce', () => {
     assertNoError(err);
     should.exist(result2);
     result2.should.eql([]);
-  });
-  describe('verify', () => {
-    // NOTE: the accounts collection is getting erased before each test
-    // this allows for the creation of tokens using the same account info
-    beforeEach(async () => {
-      await prepareDatabase(mockData);
-    });
-    it('should verify a valid nonce', async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-      // set a nonce for the account
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-      should.exist(nonce);
-      nonce.should.have.keys(['type', 'id', 'challenge']);
-      // getAll nonce for the account
-      let result;
-      let err;
-      try {
-        result = await brAuthnToken.getAll({
-          account: accountId,
-          actor,
-          type: 'nonce',
-        });
-      } catch(e) {
-        err = e;
-      }
-      assertNoError(err);
-      should.exist(result);
-      result.should.be.an('array');
-      result[0].should.have.keys([
-        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'sha256', 'expires'
-      ]);
-      // get challenge from nonce and hash it using the same salt
-      const challenge = nonce.challenge;
-      const hash = await bcrypt.hash(challenge, result[0].salt);
-      // verify the nonce token
-      let verifyResult;
-      let err2;
-      try {
-        verifyResult = await brAuthnToken.verify({
-          account: accountId,
-          actor,
-          type: 'nonce',
-          challenge: nonce.challenge,
-          hash
-        });
-      } catch(e) {
-        err2 = e;
-      }
-      assertNoError(err2);
-      should.exist(verifyResult);
-      verifyResult.should.eql({
-        id: accountId,
-        email: 'alpha@example.com',
-        token: {type: 'nonce', authenticationMethod: 'nonce'}
-      });
-    });
   });
 });
