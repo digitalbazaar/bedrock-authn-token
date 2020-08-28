@@ -389,6 +389,77 @@ describe('Nonce API', () => {
       should.exist(verifyResult);
       verifyResult.should.equal(false);
     });
+    it('should throw error when verifying nonce that has expired', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      // set a nonce with an older date.
+      const dateStub = sinon.stub(Date, 'now').callsFake(() => {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        return Date.parse(yesterday);
+      });
+
+      let err;
+      let nonce;
+      try {
+        nonce = await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(nonce);
+      nonce.should.have.keys(['type', 'id', 'challenge']);
+
+      // getAll nonce for the account
+      let result;
+      let err2;
+      try {
+        result = await brAuthnToken.getAll({
+          account: accountId,
+          actor,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err2 = e;
+      }
+      assertNoError(err2);
+      should.exist(result);
+      result.should.be.an('array');
+      result[0].should.have.keys([
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
+        'sha256', 'expires'
+      ]);
+
+      // undo the date stub
+      dateStub.restore();
+
+      // get challenge from nonce and hash it using the same salt
+      const challenge = nonce.challenge;
+      const hash = await bcrypt.hash(challenge, result[0].salt);
+
+      // verify the nonce token
+      let verifyResult;
+      let err3;
+      try {
+        verifyResult = await brAuthnToken.verify({
+          account: accountId,
+          actor,
+          type: 'nonce',
+          challenge,
+          hash
+        });
+      } catch(e) {
+        err3 = e;
+      }
+      should.not.exist(verifyResult);
+      should.exist(err3);
+      err3.name.should.equal('NotFoundError');
+      err3.message.should.equal('Authentication token has expired.');
+    });
   });
 });
 describe('Remove expired nonce', () => {
