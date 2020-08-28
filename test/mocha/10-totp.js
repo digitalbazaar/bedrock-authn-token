@@ -104,7 +104,7 @@ describe('TOTP API', () => {
         }
         should.exist(err);
         should.not.exist(result);
-        err.message.should.equal('"account" must be given.');
+        err.message.should.equal('account (string) is required');
       });
   }); // end set
 
