@@ -393,11 +393,9 @@ describe('Nonce API', () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const actor = await brAccount.getCapabilities({id: accountId});
       // set a nonce with an older date.
-      const dateStub = sinon.stub(Date, 'now').callsFake(() => {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        return Date.parse(yesterday);
-      });
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const clock = sinon.useFakeTimers(yesterday.getTime());
 
       let err;
       let nonce;
@@ -434,8 +432,8 @@ describe('Nonce API', () => {
         'sha256', 'expires'
       ]);
 
-      // undo the date stub
-      dateStub.restore();
+      // undo the stub
+      clock.restore();
 
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
@@ -472,11 +470,9 @@ describe('Remove expired nonce', () => {
     const accountId = mockData.accounts['alpha@example.com'].account.id;
     const actor = await brAccount.getCapabilities({id: accountId});
     // set a token with an older date.
-    const dateStub = sinon.stub(Date, 'now').callsFake(() => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      return Date.parse(yesterday);
-    });
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const clock = sinon.useFakeTimers(yesterday.getTime());
     let nonce1;
     let err;
     try {
@@ -508,8 +504,8 @@ describe('Remove expired nonce', () => {
       'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
       'sha256', 'expires'
     ]);
-    // undo the date stub
-    dateStub.restore();
+    // undo the stub
+    clock.restore();
     // get all existing nonce for the same account again after undoing the stub,
     // it should give an empty array as getAll drops any expired token.
     let result2;
