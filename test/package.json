@@ -11,7 +11,7 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "bedrock": "^3.1.1",
-    "bedrock-account": "github:digitalbazaar/bedrock-account#unique-email-field",
+    "bedrock-account": "^5.0.0",
     "bedrock-authn-token": "file:..",
     "bedrock-mongodb": "^7.1.0",
     "bedrock-permission": "^3.0.0",
