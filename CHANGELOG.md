@@ -11,6 +11,7 @@
 ### Changed
 - **BREAKING**: `nonce` type tokens have a `maxCount` of 5, with 10 minute expiration for each.
 - Updated test deps to use bedrock-account@5.
+- Updated peerDeps to use bedrock-mongodb@8.1.1.
 
 ## 2.2.1 - 2020-07-07
 
