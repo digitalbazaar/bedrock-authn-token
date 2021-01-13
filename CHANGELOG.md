@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 3.0.0 - 2021-01-TBD
+## 3.0.0 - 2021-01-13
 
 ### Added
 - **BREAKING**: Modifiy `set` api and `generateNonce` function to take `typeOptions` param.
