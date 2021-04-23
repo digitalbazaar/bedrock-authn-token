@@ -166,8 +166,8 @@ describe('Nonce API', () => {
       should.exist(nonce3);
       should.exist(result);
       result.should.be.an('object');
-      result.filteredTokens.should.be.an('array');
-      result.filteredTokens.length.should.equal(3);
+      result.tokens.should.be.an('array');
+      result.tokens.length.should.equal(3);
     });
     it('should throw error if email or account is not given', async () => {
       const accountId = '';
@@ -328,14 +328,14 @@ describe('Nonce API', () => {
       assertNoError(err);
       should.exist(result);
       result.should.be.an('object');
-      result.filteredTokens.should.be.an('array');
-      result.filteredTokens[0].should.have.keys([
+      result.tokens.should.be.an('array');
+      result.tokens[0].should.have.keys([
         'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
         'sha256', 'expires'
       ]);
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
-      const hash = await bcrypt.hash(challenge, result.filteredTokens[0].salt);
+      const hash = await bcrypt.hash(challenge, result.tokens[0].salt);
       // verify the nonce token
       let verifyResult;
       let err2;
@@ -429,8 +429,8 @@ describe('Nonce API', () => {
       assertNoError(err2);
       should.exist(result);
       result.should.be.an('object');
-      result.filteredTokens.should.be.an('array');
-      result.filteredTokens[0].should.have.keys([
+      result.tokens.should.be.an('array');
+      result.tokens[0].should.have.keys([
         'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
         'sha256', 'expires'
       ]);
@@ -440,7 +440,7 @@ describe('Nonce API', () => {
 
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
-      const hash = await bcrypt.hash(challenge, result.filteredTokens[0].salt);
+      const hash = await bcrypt.hash(challenge, result.tokens[0].salt);
 
       // verify the nonce token
       let verifyResult;
@@ -503,8 +503,8 @@ describe('Remove expired nonce', () => {
     assertNoError(err);
     should.exist(result1);
     result1.should.be.an('object');
-    result1.filteredTokens.should.be.an('array');
-    result1.filteredTokens[0].should.have.keys([
+    result1.tokens.should.be.an('array');
+    result1.tokens[0].should.have.keys([
       'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
       'sha256', 'expires'
     ]);
@@ -525,6 +525,6 @@ describe('Remove expired nonce', () => {
     assertNoError(err);
     should.exist(result2);
     result2.should.be.an('object');
-    result2.filteredTokens.should.eql([]);
+    result2.tokens.should.eql([]);
   });
 });
