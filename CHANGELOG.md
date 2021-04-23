@@ -1,5 +1,17 @@
 # bedrock-authn-token ChangeLog
 
+## 4.0.0 - 2021-04-33
+### Added
+- **BREAKING**: Added `combinedHash` function to assist with concatenating `clientId` and `hash` for `prefixedHash`.
+- **BREAKING**: Added `verifyHash` functions to assist with comparing `prefixedHash`, and `sha256`.
+
+### Changed
+- **BREAKING**: Updated `getAll` function to now return an object of `allTokens`, `filteredTokens`, and `expiredTokens`.
+- **BREAKING**: Updated `set` api to use the updated object from the `getAll` api request for `tokens`.
+- Changed `filterExpiredTokens` to `true` in the `getAll` api request.
+- Removed `clientId` from the `bcrypt.hash` function.
+- Updated tests to reflect the latest code changes.
+
 ## 3.0.0 - 2021-01-13
 
 ### Added
