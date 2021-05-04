@@ -1,22 +1,27 @@
 # bedrock-authn-token ChangeLog
 
-## 4.0.0 - 2021-04-33
+## 4.0.0 - 2021-05-04
 
 ### Changed
-- **BREAKING**: Updated `getAll` function to now return an object of `allTokens`, `tokens`, and `expiredTokens`.
-- **BREAKING**: Updated `set` api to use the updated object from the `getAll` api request.
+- **BREAKING**: Updated `getAll` function to now return an object of
+  `allTokens`, `tokens`, and `expiredTokens`.
+- **BREAKING**: Updated `set` API to use the updated object from the `getAll`
+  API request.
 - Updated tests to reflect the latest code changes.
 
 ## 3.0.0 - 2021-01-13
 
 ### Added
-- **BREAKING**: Modifiy `set` api and `generateNonce` function to take `typeOptions` param.
-- `get` and `getAll` api can take an optional `filterExpiredTokens` param which can drop expired tokens if set to `true`.
+- **BREAKING**: Modifiy `set` api and `generateNonce` function to take
+  `typeOptions` param.
+- `get` and `getAll` api can take an optional `filterExpiredTokens` param
+  which can drop expired tokens if set to `true`.
 - `remove` api can take an optional `id` param of a token to be removed.
 - Added tests.
 
 ### Changed
-- **BREAKING**: `nonce` type tokens have a `maxCount` of 5, with 10 minute expiration for each.
+- **BREAKING**: `nonce` type tokens have a `maxCount` of 5, with 10 minute
+  expiration for each.
 - Updated test deps to use bedrock-account@5.
 - Updated peerDeps to use bedrock-mongodb@8.1.1.
 
@@ -41,7 +46,8 @@
 ### Changed
 - **BREAKING**: Use mongo driver 3.5 api.
 - **BREAKING**: Upgrade bedrock-mongodb to ^7.0.0.
-- **BREAKING**: Use upgraded versions of `bedrock-account`, `bedrock-identity`, & `bedrock-permission`.
+- **BREAKING**: Use upgraded versions of `bedrock-account`, `bedrock-identity`,
+  & `bedrock-permission`.
 
 ## 1.4.0 - 2020-04-09
 
