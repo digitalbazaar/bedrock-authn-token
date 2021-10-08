@@ -1,6 +1,6 @@
 {
   "name": "bedrock-authn-token",
-  "version": "4.0.1",
+  "version": "4.0.2-0",
   "description": "Simple token-based authentication for Bedrock apps",
   "main": "./lib",
   "scripts": {
