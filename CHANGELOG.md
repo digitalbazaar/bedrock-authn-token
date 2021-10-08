@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 4.0.1 - TBD
+## 4.0.1 - 2021-10-08
 
 ### Fixed
 - Fix issue with salt mismatch when multiple tokens are generated.
