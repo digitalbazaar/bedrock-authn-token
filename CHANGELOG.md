@@ -1,5 +1,11 @@
 # bedrock-authn-token ChangeLog
 
+## 4.1.0 - TBD
+
+### Added
+- Added optional `explain` param to get more details about database performance.
+- Added database tests in order to check database performance.
+
 ## 4.0.1 - 2021-10-08
 
 ### Fixed
