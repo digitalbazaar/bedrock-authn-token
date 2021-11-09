@@ -242,3 +242,219 @@ describe('TOTP API', () => {
     });
   }); // end delete
 }); // end totp api
+
+describe('TOTP Database Tests', () => {
+  describe('Indexes', async () => {
+    // NOTE: the accounts collection is getting erased before each test
+    // this allows for the creation of tokens using the same account info
+    beforeEach(async () => {
+      await helpers.prepareDatabase(mockData);
+    });
+    it(`is properly indexed for 'id' in set()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+      const {executionStats} = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'id' in get()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const {executionStats} = await brAuthnToken.get({
+        account: accountId,
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'account.email' in get()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const {executionStats} = await brAuthnToken.get({
+        email: 'alpha@example.com',
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'id' in getAll()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const {executionStats} = await brAuthnToken.getAll({
+        account: accountId,
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'account.email' in getAll()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const {executionStats} = await brAuthnToken.getAll({
+        email: 'alpha@example.com',
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'id' in remove()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const {executionStats} = await brAuthnToken.remove({
+        account: accountId,
+        actor,
+        type: 'totp',
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'id' in verify()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      const {secret} = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const challenge = authenticator.generate(secret);
+      const {executionStats} = await brAuthnToken.verify({
+        account: accountId,
+        actor,
+        type: 'totp',
+        challenge,
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'account.email' in verify()`, async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const actor = await brAccount.getCapabilities({id: accountId});
+
+      // creates a token
+      const {secret} = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'totp'
+      });
+
+      const challenge = authenticator.generate(secret);
+      const {executionStats} = await brAuthnToken.verify({
+        email: 'alpha@example.com',
+        actor,
+        type: 'totp',
+        challenge,
+        explain: true
+      });
+      executionStats.nReturned.should.equal(1);
+      executionStats.totalKeysExamined.should.equal(1);
+      executionStats.totalDocsExamined.should.equal(1);
+      executionStats.executionStages.inputStage.inputStage.inputStage.stage
+        .should.equal('IXSCAN');
+    });
+    it(`is properly indexed for 'id' in setAuthenticationRequirements()`,
+      async () => {
+        const accountId = mockData.accounts['alpha@example.com'].account.id;
+        const actor = await brAccount.getCapabilities({id: accountId});
+
+        // creates a token
+        await brAuthnToken.set({
+          account: accountId,
+          actor,
+          type: 'totp'
+        });
+
+        const requiredAuthenticationMethods = [];
+        const {executionStats} = await brAuthnToken
+          .setAuthenticationRequirements({
+            account: accountId,
+            actor,
+            requiredAuthenticationMethods,
+            explain: true
+          });
+        executionStats.nReturned.should.equal(1);
+        executionStats.totalKeysExamined.should.equal(1);
+        executionStats.totalDocsExamined.should.equal(1);
+        executionStats.executionStages.inputStage.inputStage.stage
+          .should.equal('IXSCAN');
+      });
+  });
+});
