@@ -29,6 +29,8 @@ describe('Clients Database Tests', () => {
         authenticated: true
       });
 
+      // second client is created here in order to do proper assertions for
+      // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
       await brAuthnToken.clients.set({
         account: accountId2,
         actor: actor2,
