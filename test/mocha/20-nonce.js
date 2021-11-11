@@ -531,18 +531,38 @@ describe('Remove expired nonce', () => {
 
 describe('Nonce Database Tests', () => {
   describe('Indexes', () => {
+    let accountId;
+    let actor;
+    let nonce;
     // NOTE: the accounts collection is getting erased before each test
     // this allows for the creation of tokens using the same account info
     beforeEach(async () => {
       await prepareDatabase(mockData);
+      accountId = mockData.accounts['alpha@example.com'].account.id;
+      actor = await brAccount.getCapabilities({id: accountId});
+
+      const accountId2 = mockData.accounts['beta@example.com'].account.id;
+      const actor2 = await brAccount.getCapabilities({id: accountId2});
+
+      // creates tokens
+      nonce = await brAuthnToken.set({
+        account: accountId,
+        actor,
+        type: 'nonce'
+      });
+      await brAuthnToken.set({
+        account: accountId2,
+        actor: actor2,
+        type: 'nonce'
+      });
     });
     it(`is properly indexed for 'id' and ` +
       `'meta.bedrock-authn-token.tokens.nonce' in set()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
+      const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+      const actor3 = await brAccount.getCapabilities({id: accountId3});
       const {executionStats} = await brAuthnToken.set({
         account: accountId,
-        actor,
+        actor: actor3,
         type: 'nonce',
         explain: true
       });
@@ -554,13 +574,13 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'account.email' and ` +
       `'meta.bedrock-authn-token.tokens.nonce' in set()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-      const record = await brAccount.get({actor, id: accountId});
+      const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+      const actor3 = await brAccount.getCapabilities({id: accountId3});
+      const record = await brAccount.get({actor: actor3, id: accountId3});
       const email = record.account.email;
       const {executionStats} = await brAuthnToken.set({
         email,
-        actor,
+        actor: actor3,
         type: 'nonce',
         explain: true
       });
@@ -572,16 +592,6 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'id' and ` +
       `'meta.bedrock-authn-token.tokens.nonce.id' in get()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const {executionStats} = await brAuthnToken.get({
         account: accountId,
         actor,
@@ -597,16 +607,6 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'account.email' and ` +
       `'meta.bedrock-authn-token.tokens.nonce.id' in get()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const {executionStats} = await brAuthnToken.get({
         email: 'alpha@example.com',
         actor,
@@ -621,16 +621,6 @@ describe('Nonce Database Tests', () => {
         .should.equal('IXSCAN');
     });
     it(`is properly indexed for 'id' in getAll()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const {executionStats} = await brAuthnToken.getAll({
         account: accountId,
         actor,
@@ -644,16 +634,6 @@ describe('Nonce Database Tests', () => {
         .should.equal('IXSCAN');
     });
     it(`is properly indexed for 'account.email' in getAll()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const {executionStats} = await brAuthnToken.getAll({
         email: 'alpha@example.com',
         actor,
@@ -667,16 +647,6 @@ describe('Nonce Database Tests', () => {
         .should.equal('IXSCAN');
     });
     it(`is properly indexed for 'id' in remove()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const {executionStats} = await brAuthnToken.remove({
         account: accountId,
         actor,
@@ -691,16 +661,6 @@ describe('Nonce Database Tests', () => {
         .should.equal('IXSCAN');
     });
     it(`is properly indexed for 'id' in verify()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const challenge = nonce.challenge;
       const {executionStats} = await brAuthnToken.verify({
         account: accountId,
@@ -716,16 +676,6 @@ describe('Nonce Database Tests', () => {
         .should.equal('IXSCAN');
     });
     it(`is properly indexed for 'account.email' in verify()`, async () => {
-      const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
-
-      // creates a token
-      const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce'
-      });
-
       const challenge = nonce.challenge;
       const {executionStats} = await brAuthnToken.verify({
         email: 'alpha@example.com',
@@ -742,16 +692,6 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'id' in setAuthenticationRequirements()`,
       async () => {
-        const accountId = mockData.accounts['alpha@example.com'].account.id;
-        const actor = await brAccount.getCapabilities({id: accountId});
-
-        // creates a token
-        await brAuthnToken.set({
-          account: accountId,
-          actor,
-          type: 'nonce'
-        });
-
         const requiredAuthenticationMethods = [];
         const {executionStats} = await brAuthnToken
           .setAuthenticationRequirements({
