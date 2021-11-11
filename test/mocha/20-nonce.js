@@ -544,12 +544,14 @@ describe('Nonce Database Tests', () => {
       const accountId2 = mockData.accounts['beta@example.com'].account.id;
       const actor2 = await brAccount.getCapabilities({id: accountId2});
 
-      // creates tokens
+      // creates token
       nonce = await brAuthnToken.set({
         account: accountId,
         actor,
         type: 'nonce'
       });
+      // second token is created here in order to do proper assertions for
+      // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
       await brAuthnToken.set({
         account: accountId2,
         actor: actor2,
