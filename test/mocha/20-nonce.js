@@ -37,7 +37,7 @@ describe('Nonce API', () => {
       should.exist(result.challenge);
       result.challenge.should.be.a('string');
     });
-    it('should set a challenge of length 9 if "typeOptions" is not given',
+    it('should set a challenge of length 6 if "typeOptions" is not given',
       async () => {
         const accountId = mockData.accounts['alpha@example.com'].account.id;
         const actor = await brAccount.getCapabilities({id: accountId});
@@ -57,9 +57,9 @@ describe('Nonce API', () => {
         result.should.be.an('object');
         result.should.have.keys(['type', 'id', 'challenge']);
         result.challenge.should.be.a('string');
-        result.challenge.should.match(/^\d{9}$/);
+        result.challenge.should.match(/^\d{6}$/);
       });
-    it('should set a challenge of length 9 if "typeOptions.entryStyle" is ' +
+    it('should set a challenge of length 6 if "typeOptions.entryStyle" is ' +
       'set to "human"',
     async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
@@ -81,7 +81,7 @@ describe('Nonce API', () => {
       result.should.be.an('object');
       result.should.have.keys(['type', 'id', 'challenge']);
       result.challenge.should.be.a('string');
-      result.challenge.should.match(/^\d{9}$/);
+      result.challenge.should.match(/^\d{6}$/);
     });
     it('should set a challenge of length 23 if "typeOptions.entryStyle" is ' +
       'set to "machine"',
