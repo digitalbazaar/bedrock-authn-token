@@ -4,6 +4,8 @@
 
 ### Changed
 - **BREAKING**: Update length of `nonce` in `generateNonce` to 6 instead of 9.
+  Additional care must be taken in deployments to prevent too many attempts to
+  input (or "guess") a nonce at any verification endpoints in a short period of time.
 
 ## 4.1.0 - 2021-11-09
 
