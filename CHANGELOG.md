@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 5.0.0 - 2022-xx-xx
+## 5.0.0 - 2022-02-28
 
 ### Changed
 - **BREAKING**: Update length of `nonce` in `generateNonce` to 6 instead of 9.
