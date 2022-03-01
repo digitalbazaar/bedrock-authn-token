@@ -1,5 +1,11 @@
 # bedrock-authn-token ChangeLog
 
+## 6.0.0 - 2022-xx-xx
+
+### Changed
+- **BREAKING**: Added check for `tokens` to exist in  `set`, throw a `NotFoundError`
+  if no account is found.
+
 ## 5.0.0 - 2022-02-28
 
 ### Changed
