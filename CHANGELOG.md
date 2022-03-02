@@ -1,17 +1,18 @@
 # bedrock-authn-token ChangeLog
 
-## 6.0.0 - 2022-xx-xx
+## 6.0.0 - 2022-03-02
 
 ### Changed
-- **BREAKING**: Remove `catch` around `api.getAll` for tokens, allow `NotFoundError`
-  to be thrown if an account is not found.
+- **BREAKING**: Remove `catch` around `api.getAll` for tokens, allow
+  `NotFoundError` to be thrown if an account is not found.
 
 ## 5.0.0 - 2022-02-28
 
 ### Changed
 - **BREAKING**: Update length of `nonce` in `generateNonce` to 6 instead of 9.
   Additional care must be taken in deployments to prevent too many attempts to
-  input (or "guess") a nonce at any verification endpoints in a short period of time.
+  input (or "guess") a nonce at any verification endpoints in a short period of
+  time.
 
 ## 4.1.0 - 2021-11-09
 
