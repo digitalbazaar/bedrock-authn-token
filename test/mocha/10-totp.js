@@ -3,11 +3,10 @@
  */
 'use strict';
 
-const brAccount = require('bedrock-account');
+const {authenticator} = require('otplib');
 const brAuthnToken = require('bedrock-authn-token');
 const helpers = require('./helpers.js');
 const mockData = require('./mock.data');
-const {authenticator} = require('otplib');
 
 describe('TOTP API', () => {
   describe('set', () => {
@@ -18,15 +17,10 @@ describe('TOTP API', () => {
     });
     it('should set a secret', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
-        result = await brAuthnToken.set({
-          account: accountId,
-          actor,
-          type: 'totp',
-        });
+        result = await brAuthnToken.set({accountId, type: 'totp'});
       } catch(e) {
         err = e;
       }
@@ -41,14 +35,12 @@ describe('TOTP API', () => {
     });
     it('should set a secret with a serviceId', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       const serviceId = 'someWebsite';
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           serviceId,
           type: 'totp',
         });
@@ -67,19 +59,16 @@ describe('TOTP API', () => {
     });
     it('should not set a secret if one already exists', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'totp',
+        accountId,
+        type: 'totp'
       });
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
-          type: 'totp',
+          accountId,
+          type: 'totp'
         });
       } catch(e) {
         err = e;
@@ -87,15 +76,12 @@ describe('TOTP API', () => {
       should.not.exist(result);
       should.exist(err);
     });
-    it('should throw error if account is not given for types except nonce',
+    it('should throw error if `accountId` is not non-nonce type',
       async () => {
-        const accountId = mockData.accounts['alpha@example.com'].account.id;
-        const actor = await brAccount.getCapabilities({id: accountId});
         let result;
         let err;
         try {
           result = await brAuthnToken.set({
-            actor,
             type: 'totp',
             email: 'alpha@example.com'
           });
@@ -104,7 +90,7 @@ describe('TOTP API', () => {
         }
         should.exist(err);
         should.not.exist(result);
-        err.message.should.equal('account (string) is required');
+        err.message.should.equal('accountId (string) is required');
       });
   }); // end set
 
@@ -112,17 +98,14 @@ describe('TOTP API', () => {
     const mockAccountEmail = 'alpha@example.com';
     let secret;
     let accountId;
-    let actor;
     before(async () => {
       await helpers.prepareDatabase(mockData);
     });
     // set an OTOP secret
     before(async () => {
       accountId = mockData.accounts[mockAccountEmail].account.id;
-      actor = await brAccount.getCapabilities({id: accountId});
       ({secret} = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
       }));
     });
@@ -132,8 +115,7 @@ describe('TOTP API', () => {
       let result;
       try {
         result = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'totp',
           challenge,
         });
@@ -155,8 +137,7 @@ describe('TOTP API', () => {
       let result;
       try {
         result = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'totp',
           challenge,
         });
@@ -174,17 +155,14 @@ describe('TOTP API', () => {
     const mockAccountEmail = 'alpha@example.com';
     let secret;
     let accountId;
-    let actor;
     before(async () => {
       await helpers.prepareDatabase(mockData);
     });
     // set an OTOP secret
     before(async () => {
       accountId = mockData.accounts[mockAccountEmail].account.id;
-      actor = await brAccount.getCapabilities({id: accountId});
       ({secret} = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
       }));
     });
@@ -194,8 +172,7 @@ describe('TOTP API', () => {
       let result;
       try {
         result = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'totp',
           challenge,
         });
@@ -214,8 +191,7 @@ describe('TOTP API', () => {
       result = null;
       try {
         result = await brAuthnToken.remove({
-          account: accountId,
-          actor,
+          accountId,
           type: 'totp',
         });
       } catch(e) {
@@ -229,8 +205,7 @@ describe('TOTP API', () => {
       result = null;
       try {
         result = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'totp',
           challenge,
         });
@@ -246,37 +221,30 @@ describe('TOTP API', () => {
 describe('TOTP Database Tests', () => {
   describe('Indexes', async () => {
     let accountId;
-    let actor;
     let secret;
     // NOTE: the accounts collection is getting erased before each test
     // this allows for the creation of tokens using the same account info
     beforeEach(async () => {
       await helpers.prepareDatabase(mockData);
       accountId = mockData.accounts['alpha@example.com'].account.id;
-      actor = await brAccount.getCapabilities({id: accountId});
       const accountId2 = mockData.accounts['beta@example.com'].account.id;
-      const actor2 = await brAccount.getCapabilities({id: accountId2});
 
       // creates token
       ({secret} = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp'
       }));
       // second token is created here in order to do proper assertions for
       // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
       await brAuthnToken.set({
-        account: accountId2,
-        actor: actor2,
+        accountId: accountId2,
         type: 'totp'
       });
     });
     it(`is properly indexed for 'id' in set()`, async () => {
       const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-      const actor3 = await brAccount.getCapabilities({id: accountId3});
       const {executionStats} = await brAuthnToken.set({
-        account: accountId3,
-        actor: actor3,
+        accountId: accountId3,
         type: 'totp',
         explain: true
       });
@@ -288,8 +256,7 @@ describe('TOTP Database Tests', () => {
     });
     it(`is properly indexed for 'id' in get()`, async () => {
       const {executionStats} = await brAuthnToken.get({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
         explain: true
       });
@@ -302,7 +269,6 @@ describe('TOTP Database Tests', () => {
     it(`is properly indexed for 'account.email' in get()`, async () => {
       const {executionStats} = await brAuthnToken.get({
         email: 'alpha@example.com',
-        actor,
         type: 'totp',
         explain: true
       });
@@ -314,8 +280,7 @@ describe('TOTP Database Tests', () => {
     });
     it(`is properly indexed for 'id' in getAll()`, async () => {
       const {executionStats} = await brAuthnToken.getAll({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
         explain: true
       });
@@ -328,7 +293,6 @@ describe('TOTP Database Tests', () => {
     it(`is properly indexed for 'account.email' in getAll()`, async () => {
       const {executionStats} = await brAuthnToken.getAll({
         email: 'alpha@example.com',
-        actor,
         type: 'totp',
         explain: true
       });
@@ -340,8 +304,7 @@ describe('TOTP Database Tests', () => {
     });
     it(`is properly indexed for 'id' in remove()`, async () => {
       const {executionStats} = await brAuthnToken.remove({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
         explain: true
       });
@@ -354,8 +317,7 @@ describe('TOTP Database Tests', () => {
     it(`is properly indexed for 'id' in verify()`, async () => {
       const challenge = authenticator.generate(secret);
       const {executionStats} = await brAuthnToken.verify({
-        account: accountId,
-        actor,
+        accountId,
         type: 'totp',
         challenge,
         explain: true
@@ -370,7 +332,6 @@ describe('TOTP Database Tests', () => {
       const challenge = authenticator.generate(secret);
       const {executionStats} = await brAuthnToken.verify({
         email: 'alpha@example.com',
-        actor,
         type: 'totp',
         challenge,
         explain: true
@@ -386,8 +347,7 @@ describe('TOTP Database Tests', () => {
         const requiredAuthenticationMethods = [];
         const {executionStats} = await brAuthnToken
           .setAuthenticationRequirements({
-            account: accountId,
-            actor,
+            accountId,
             requiredAuthenticationMethods,
             explain: true
           });
