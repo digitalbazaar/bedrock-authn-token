@@ -465,7 +465,6 @@ describe('Remove expired nonce', () => {
 describe('Nonce Database Tests', () => {
   describe('Indexes', () => {
     let accountId;
-    let actor;
     let nonce;
     // NOTE: the accounts collection is getting erased before each test
     // this allows for the creation of tokens using the same account info
