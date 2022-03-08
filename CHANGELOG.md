@@ -1,5 +1,21 @@
 # bedrock-authn-token ChangeLog
 
+## 7.0.0 - 2022-03-xx
+
+### Changed
+- **BREAKING**: Use `bedrock-account@6` which removes `bedrock-permission`
+  including concepts such as `actor`.
+- **BREAKING**: Updated peer dependencies, use:
+  - `bedrock-account@6`
+  - `bedrock-mongodb@8.4`
+  - Remove `bedrock-permission`.
+
+### Removed
+- **BREAKING**: Remove all usage of `bedrock-permission` including
+  roles (e.g., `sysResourceRole`), `actor`, etc. All authz should
+  be managed via HTTP (or other) APIs and technologies such as
+  zcaps, meters, and oauth2.
+
 ## 6.0.0 - 2022-03-02
 
 ### Changed
