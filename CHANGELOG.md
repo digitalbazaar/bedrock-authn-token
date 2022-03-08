@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 7.0.0 - 2022-03-xx
+## 7.0.0 - 2022-03-08
 
 ### Changed
 - **BREAKING**: Use `bedrock-account@6` which removes `bedrock-permission`
