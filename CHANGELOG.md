@@ -6,11 +6,11 @@
 - **BREAKING**: Use `bedrock-account@6` which removes `bedrock-permission`
   including concepts such as `actor`.
 - **BREAKING**: Updated peer dependencies, use:
-  - `bedrock-account@6`
+  - `bedrock-account@6.1`
   - `bedrock-mongodb@8.4`
   - Remove `bedrock-permission`.
-- **BREAKING**: `set()` API uses the param name `accountId` instead of
-  `account` to clarify that the value is an ID for the account.
+- **BREAKING**: Rename `account` param to `accountId` in all functions where
+  its value is an ID for the account.
 
 ### Removed
 - **BREAKING**: Remove all usage of `bedrock-permission` including
