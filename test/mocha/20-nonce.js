@@ -1,8 +1,9 @@
-/*
- * Copyright (c) 2018-2020 Digital Bazaar, Inc. All rights reserved.
+/*!
+ * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
 'use strict';
 
+const bedrock = require('bedrock');
 const brAccount = require('bedrock-account');
 const brAuthnToken = require('bedrock-authn-token');
 const {prepareDatabase} = require('./helpers.js');
@@ -19,13 +20,11 @@ describe('Nonce API', () => {
     });
     it('should set a challenge', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
@@ -40,13 +39,11 @@ describe('Nonce API', () => {
     it('should set a challenge of length 6 if "typeOptions" is not given',
       async () => {
         const accountId = mockData.accounts['alpha@example.com'].account.id;
-        const actor = await brAccount.getCapabilities({id: accountId});
         let result;
         let err;
         try {
           result = await brAuthnToken.set({
-            account: accountId,
-            actor,
+            accountId,
             type: 'nonce',
           });
         } catch(e) {
@@ -63,13 +60,11 @@ describe('Nonce API', () => {
       'set to "human"',
     async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           typeOptions: {entryStyle: 'human'}
         });
@@ -87,13 +82,11 @@ describe('Nonce API', () => {
       'set to "machine"',
     async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           typeOptions: {entryStyle: 'machine'}
         });
@@ -111,13 +104,11 @@ describe('Nonce API', () => {
       'nor "machine"',
     async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           typeOptions: {entryStyle: 'not-machine-or-human'}
         });
@@ -131,29 +122,24 @@ describe('Nonce API', () => {
     });
     it('should generate an array of nonce', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       let err;
       // create three new nonce tokens
       const nonce1 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       const nonce2 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       const nonce3 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       let result;
       try {
         result = await brAuthnToken.getAll({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
@@ -170,13 +156,10 @@ describe('Nonce API', () => {
       result.tokens.length.should.equal(3);
     });
     it('should throw error if email or account is not given', async () => {
-      const accountId = '';
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          actor,
           type: 'nonce',
         });
       } catch(e) {
@@ -184,18 +167,17 @@ describe('Nonce API', () => {
       }
       should.exist(err);
       should.not.exist(result);
-      err.message.should.equal('Either "account" or "email" must be provided.');
+      err.message.should.equal(
+        'Exactly one of "accountId" or "email" is required.');
     });
     it('should throw error if both email and account is given', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const email = 'someEmail@email.com';
-      const actor = await brAccount.getCapabilities({id: accountId});
       let result;
       let err;
       try {
         result = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           email
         });
@@ -204,81 +186,48 @@ describe('Nonce API', () => {
       }
       should.exist(err);
       should.not.exist(result);
-      err.message.should.equal('Only "account" or "email" must be given.');
+      err.message.should.equal(
+        'Exactly one of "accountId" or "email" is required.');
     });
-    it('should throw error if maxNonceCount is  greater than 5', async () => {
+    it('should throw error if too many nonces are created', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
+      const {maxNonceCount} = bedrock.config['authn-token'].nonce;
+
+      // create max nonce tokens
+      for(let i = 0; i < maxNonceCount; ++i) {
+        const nonce = await brAuthnToken.set({accountId, type: 'nonce'});
+        should.exist(nonce);
+      }
+      // try to create another nonce token when others haven't expired;
+      // it should throw an error
+      let nonce;
       let err;
-      // create five nonce tokens
-      const nonce1 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-      const nonce2 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-      const nonce3 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-      const nonce4 = await brAuthnToken.set({
-        account: accountId,
-        actor,
-        type: 'nonce',
-      });
-      should.exist(nonce1);
-      should.exist(nonce2);
-      should.exist(nonce3);
-      should.exist(nonce4);
-      let nonce5;
       try {
-        nonce5 = await brAuthnToken.set({
-          account: accountId,
-          actor,
+        nonce = await brAuthnToken.set({
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
         err = e;
       }
-      should.exist(nonce5);
-      should.not.exist(err);
-      // try to create another nonce token when other 5 nonces hasn't expired
-      // it should throw an error.
-      let nonce6;
-      try {
-        nonce6 = await brAuthnToken.set({
-          account: accountId,
-          actor,
-          type: 'nonce',
-        });
-      } catch(e) {
-        err = e;
-      }
-      should.not.exist(nonce6);
+      should.not.exist(nonce);
       should.exist(err);
       err.name.should.equal('NotAllowedError');
-      err.message.should.equal('Tokens exceeds maxNonceCount of 5.');
+      err.message.should.equal(
+        `No more than ${maxNonceCount} tokens can be pending at once.`);
     });
     it('should get a nonce with an "id"', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       // create two nonces
       const nonce1 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       should.exist(nonce1);
       nonce1.should.have.keys(['challenge', 'id', 'type']);
       nonce1.type.should.equal('nonce');
       const nonce2 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       should.exist(nonce2);
@@ -287,8 +236,7 @@ describe('Nonce API', () => {
       // get nonce1 using its id, the result of get should have the same id as
       // nonce1
       const result = await brAuthnToken.get({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
         id: nonce1.id
       });
@@ -304,11 +252,9 @@ describe('Nonce API', () => {
     });
     it('should verify a valid nonce', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       // set a nonce for the account
       const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       should.exist(nonce);
@@ -318,8 +264,7 @@ describe('Nonce API', () => {
       let err;
       try {
         result = await brAuthnToken.getAll({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
@@ -341,8 +286,7 @@ describe('Nonce API', () => {
       let err2;
       try {
         verifyResult = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           challenge,
           hash
@@ -360,11 +304,9 @@ describe('Nonce API', () => {
     });
     it('should return false if a different hash is passed', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       // set a nonce for the account
       const nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
       should.exist(nonce);
@@ -378,8 +320,7 @@ describe('Nonce API', () => {
       let err;
       try {
         verifyResult = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           challenge,
           hash
@@ -393,7 +334,6 @@ describe('Nonce API', () => {
     });
     it('should throw error when verifying nonce that has expired', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
-      const actor = await brAccount.getCapabilities({id: accountId});
       // set a nonce with an older date.
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
@@ -403,8 +343,7 @@ describe('Nonce API', () => {
       let nonce;
       try {
         nonce = await brAuthnToken.set({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
@@ -419,8 +358,7 @@ describe('Nonce API', () => {
       let err2;
       try {
         result = await brAuthnToken.getAll({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
         });
       } catch(e) {
@@ -447,8 +385,7 @@ describe('Nonce API', () => {
       let err3;
       try {
         verifyResult = await brAuthnToken.verify({
-          account: accountId,
-          actor,
+          accountId,
           type: 'nonce',
           challenge,
           hash
@@ -471,7 +408,6 @@ describe('Remove expired nonce', () => {
   });
   it('should remove an expired nonce', async () => {
     const accountId = mockData.accounts['alpha@example.com'].account.id;
-    const actor = await brAccount.getCapabilities({id: accountId});
     // set a token with an older date.
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -480,8 +416,7 @@ describe('Remove expired nonce', () => {
     let err;
     try {
       nonce1 = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
     } catch(e) {
@@ -493,8 +428,7 @@ describe('Remove expired nonce', () => {
     let result1;
     try {
       result1 = await brAuthnToken.getAll({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
     } catch(e) {
@@ -515,8 +449,7 @@ describe('Remove expired nonce', () => {
     let result2;
     try {
       result2 = await brAuthnToken.getAll({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
       });
     } catch(e) {
@@ -539,32 +472,25 @@ describe('Nonce Database Tests', () => {
     beforeEach(async () => {
       await prepareDatabase(mockData);
       accountId = mockData.accounts['alpha@example.com'].account.id;
-      actor = await brAccount.getCapabilities({id: accountId});
-
       const accountId2 = mockData.accounts['beta@example.com'].account.id;
-      const actor2 = await brAccount.getCapabilities({id: accountId2});
 
       // creates token
       nonce = await brAuthnToken.set({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce'
       });
       // second token is created here in order to do proper assertions for
       // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
       await brAuthnToken.set({
-        account: accountId2,
-        actor: actor2,
+        accountId: accountId2,
         type: 'nonce'
       });
     });
     it(`is properly indexed for 'id' and ` +
       `'meta.bedrock-authn-token.tokens.nonce' in set()`, async () => {
       const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-      const actor3 = await brAccount.getCapabilities({id: accountId3});
       const {executionStats} = await brAuthnToken.set({
-        account: accountId,
-        actor: actor3,
+        accountId: accountId3,
         type: 'nonce',
         explain: true
       });
@@ -577,12 +503,10 @@ describe('Nonce Database Tests', () => {
     it(`is properly indexed for 'account.email' and ` +
       `'meta.bedrock-authn-token.tokens.nonce' in set()`, async () => {
       const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-      const actor3 = await brAccount.getCapabilities({id: accountId3});
-      const record = await brAccount.get({actor: actor3, id: accountId3});
+      const record = await brAccount.get({id: accountId3});
       const email = record.account.email;
       const {executionStats} = await brAuthnToken.set({
         email,
-        actor: actor3,
         type: 'nonce',
         explain: true
       });
@@ -595,8 +519,7 @@ describe('Nonce Database Tests', () => {
     it(`is properly indexed for 'id' and ` +
       `'meta.bedrock-authn-token.tokens.nonce.id' in get()`, async () => {
       const {executionStats} = await brAuthnToken.get({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
         id: nonce.id,
         explain: true
@@ -611,7 +534,6 @@ describe('Nonce Database Tests', () => {
       `'meta.bedrock-authn-token.tokens.nonce.id' in get()`, async () => {
       const {executionStats} = await brAuthnToken.get({
         email: 'alpha@example.com',
-        actor,
         type: 'nonce',
         id: nonce.id,
         explain: true
@@ -624,8 +546,7 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'id' in getAll()`, async () => {
       const {executionStats} = await brAuthnToken.getAll({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
         explain: true
       });
@@ -638,7 +559,6 @@ describe('Nonce Database Tests', () => {
     it(`is properly indexed for 'account.email' in getAll()`, async () => {
       const {executionStats} = await brAuthnToken.getAll({
         email: 'alpha@example.com',
-        actor,
         type: 'nonce',
         explain: true
       });
@@ -650,8 +570,7 @@ describe('Nonce Database Tests', () => {
     });
     it(`is properly indexed for 'id' in remove()`, async () => {
       const {executionStats} = await brAuthnToken.remove({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
         id: nonce.id,
         explain: true
@@ -665,8 +584,7 @@ describe('Nonce Database Tests', () => {
     it(`is properly indexed for 'id' in verify()`, async () => {
       const challenge = nonce.challenge;
       const {executionStats} = await brAuthnToken.verify({
-        account: accountId,
-        actor,
+        accountId,
         type: 'nonce',
         challenge,
         explain: true
@@ -681,7 +599,6 @@ describe('Nonce Database Tests', () => {
       const challenge = nonce.challenge;
       const {executionStats} = await brAuthnToken.verify({
         email: 'alpha@example.com',
-        actor,
         type: 'nonce',
         challenge,
         explain: true
@@ -697,8 +614,7 @@ describe('Nonce Database Tests', () => {
         const requiredAuthenticationMethods = [];
         const {executionStats} = await brAuthnToken
           .setAuthenticationRequirements({
-            account: accountId,
-            actor,
+            accountId,
             requiredAuthenticationMethods,
             explain: true
           });

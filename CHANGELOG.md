@@ -11,6 +11,8 @@
   - Remove `bedrock-permission`.
 - **BREAKING**: Rename `account` param to `accountId` in all functions where
   its value is an ID for the account.
+- **BREAKING**: Move `maxNonceCount` out of `defaults` namespace since it is
+  not a "default" that can be overridden via an API call.
 
 ### Removed
 - **BREAKING**: Remove all usage of `bedrock-permission` including
