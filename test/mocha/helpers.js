@@ -1,11 +1,10 @@
-/*
- * Copyright (c) 2018-2020 Digital Bazaar, Inc. All rights reserved.
+/*!
+ * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
 'use strict';
 
 const brAccount = require('bedrock-account');
 const database = require('bedrock-mongodb');
-const {promisify} = require('util');
 
 exports.prepareDatabase = async mockData => {
   await exports.removeCollections();
@@ -16,7 +15,7 @@ exports.removeCollections = async (
   collectionNames = [
     'account',
   ]) => {
-  await promisify(database.openCollections)(collectionNames);
+  await database.openCollections(collectionNames);
   for(const collectionName of collectionNames) {
     await database.collections[collectionName].deleteMany({});
   }
@@ -30,7 +29,7 @@ async function _insertTestData(mockData) {
   for(const record of records) {
     try {
       await brAccount.insert(
-        {actor: null, account: record.account, meta: record.meta || {}});
+        {account: record.account, meta: record.meta || {}});
     } catch(e) {
       if(e.name === 'DuplicateError') {
         // duplicate error means test data is already loaded
