@@ -32,8 +32,8 @@
     "otplib": "^12.0.1"
   },
   "peerDependencies": {
-    "bedrock": "^4.4.3",
-    "bedrock-account": "^6.0.0",
+    "bedrock": "^4.5.0",
+    "bedrock-account": "^6.3.0",
     "bedrock-mongodb": "^8.4.0"
   },
   "directories": {
