@@ -13,7 +13,7 @@
     "bedrock": "^4.5.0",
     "bedrock-account": "^6.3.1",
     "bedrock-authn-token": "file:..",
-    "bedrock-mongodb": "^8.4.0",
+    "bedrock-mongodb": "^8.5.0",
     "bedrock-test": "^6.0.0",
     "bedrock-validation": "^5.6.0",
     "cross-env": "^7.0.2",
