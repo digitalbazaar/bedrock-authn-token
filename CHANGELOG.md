@@ -4,7 +4,8 @@
 
 ### Changed
 - Update peer deps:
-  - `bedrock@4.5`.
+  - `bedrock@4.5`
+  - `bedrock-mongodb@8.5`.
 - Update internals to use esm style and use `esm.js` to
   transpile to CommonJS.
 
