@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 7.1.1 - 2022-03-xx
+
+### Fixed
+- Ensure module uses a default export for backwards compatibility.
+
 ## 7.1.0 - 2022-03-24
 
 ### Changed
