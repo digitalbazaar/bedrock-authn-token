@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 8.0.0 - 2022-04-xx
+## 8.0.0 - 2022-04-06
 
 ### Changed
 - **BREAKING**: Rename package to `@bedrock/authn-token`.
