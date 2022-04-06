@@ -1,28 +1,24 @@
 /*!
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
-'use strict';
+import * as brAccount from '@bedrock/account';
+import * as database from '@bedrock/mongodb';
 
-const brAccount = require('bedrock-account');
-const database = require('bedrock-mongodb');
-
-exports.prepareDatabase = async mockData => {
-  await exports.removeCollections();
+export async function prepareDatabase(mockData) {
+  await removeCollections();
   await _insertTestData(mockData);
-};
+}
 
-exports.removeCollections = async (
-  collectionNames = [
-    'account',
-  ]) => {
+export async function removeCollections(collectionNames = ['account']) {
   await database.openCollections(collectionNames);
   for(const collectionName of collectionNames) {
     await database.collections[collectionName].deleteMany({});
   }
-};
+}
 
-exports.removeCollection =
-  async collectionName => exports.removeCollections([collectionName]);
+export async function removeCollection(collectionName) {
+  return removeCollections([collectionName]);
+}
 
 async function _insertTestData(mockData) {
   const records = Object.values(mockData.accounts);

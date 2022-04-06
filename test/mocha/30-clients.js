@@ -1,11 +1,9 @@
 /*!
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
-'use strict';
-
-const brAuthnToken = require('bedrock-authn-token');
-const helpers = require('./helpers.js');
-const mockData = require('./mock.data');
+import * as brAuthnToken from '@bedrock/authn-token';
+import * as helpers from './helpers.js';
+import {mockData} from './mock.data.js';
 
 describe('Clients Database Tests', () => {
   describe('Indexes', async () => {

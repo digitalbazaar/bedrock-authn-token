@@ -1,9 +1,9 @@
 /*!
  * Copyright (c) 2019-2022 Digital Bazaar, Inc. All rights reserved.
  */
-const bedrock = require('bedrock');
-require('bedrock-account');
-require('bedrock-authn-token');
+import * as bedrock from '@bedrock/core';
+import '@bedrock/account';
+import '@bedrock/authn-token';
+import '@bedrock/test';
 
-require('bedrock-test');
 bedrock.start();
