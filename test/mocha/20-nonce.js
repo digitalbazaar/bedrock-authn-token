@@ -1,15 +1,13 @@
 /*!
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
-'use strict';
-
-const bedrock = require('bedrock');
-const brAccount = require('bedrock-account');
-const brAuthnToken = require('bedrock-authn-token');
-const {prepareDatabase} = require('./helpers.js');
-const mockData = require('./mock.data');
-const sinon = require('sinon');
-const bcrypt = require('bcrypt');
+import * as bedrock from '@bedrock/core';
+import * as brAccount from '@bedrock/account';
+import * as brAuthnToken from '@bedrock/authn-token';
+import bcrypt from 'bcrypt';
+import {prepareDatabase} from './helpers.js';
+import {mockData} from './mock.data.js';
+import sinon from 'sinon';
 
 describe('Nonce API', () => {
   describe('set', () => {

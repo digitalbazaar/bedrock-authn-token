@@ -1,5 +1,13 @@
 # bedrock-authn-token ChangeLog
 
+## 8.0.0 - 2022-04-xx
+
+### Changed
+- **BREAKING**: Rename package to `@bedrock/authn-token`.
+- **BREAKING**: Convert to module (ESM).
+- **BREAKING**: Remove default export.
+- **BREAKING**: Require node 14.x.
+
 ## 7.1.1 - 2022-03-26
 
 ### Fixed
