@@ -1,9 +1,7 @@
 /*!
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
-import * as bedrock from '@bedrock/core';
-
-const {util: {uuid}} = bedrock;
+import {v4 as uuid} from 'uuid';
 
 export const mockData = {};
 const accounts = mockData.accounts = {};
