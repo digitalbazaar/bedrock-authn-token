@@ -100,7 +100,7 @@ describe('Password API', () => {
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
         'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'sha256'
+        'hashAlgorithm', 'sha256'
       ]);
       // get rehash password using the same salt
       const hash2 = await bcrypt.hash('password', result.tokens[0].salt);
