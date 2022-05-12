@@ -2,6 +2,14 @@
 
 ## 10.0.0 - 2022-05-xx
 
+### Changed
+- **BREAKING**: Include `hashAlgorithm` in password and nonce tokens. This
+  change should be a mostly backwards compatible change but is marked breaking
+  because it is a data structure change. However, if a token does not have a
+  `hashAlgorithm`, it is assumed to be `bcrypt`. Password / nonce hashing
+  must be performed on the client, so the hash algorithm is new information
+  to be sent to the client so it can produce a matching hash.
+
 ### Removed
 - **BREAKING**: Remove database `explain` option from most public APIs.
 - **BREAKING**: Remove `challenge` `type`. This type was never implemented and

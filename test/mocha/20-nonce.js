@@ -274,7 +274,7 @@ describe('Nonce API', () => {
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
         'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'sha256', 'expires'
+        'hashAlgorithm', 'sha256', 'expires'
       ]);
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
@@ -368,7 +368,7 @@ describe('Nonce API', () => {
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
         'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'sha256', 'expires'
+        'hashAlgorithm', 'sha256', 'expires'
       ]);
 
       // undo the stub
@@ -438,7 +438,7 @@ describe('Remove expired nonce', () => {
     result1.tokens.should.be.an('array');
     result1.tokens[0].should.have.keys([
       'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-      'sha256', 'expires'
+      'hashAlgorithm', 'sha256', 'expires'
     ]);
     // undo the stub
     clock.restore();
