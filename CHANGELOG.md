@@ -3,6 +3,7 @@
 ## 10.0.0 - 2022-05-xx
 
 ### Removed
+- **BREAKING**: Remove database `explain` option from most public APIs.
 - **BREAKING**: Remove `challenge` `type`. This type was never implemented and
   can be confused with the option `challenge` which specifies an unhashed
   value to be provided when verifying a `totp` token.

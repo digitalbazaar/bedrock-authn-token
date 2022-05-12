@@ -620,7 +620,7 @@ describe('Nonce Database Tests', () => {
       it(`is properly indexed for 'account.email'`, async () => {
         const {
           executionStats
-        } = await brAuthnToken.verify({
+        } = await brAuthnToken._tokenStorage.getAccountRecord({
           email: 'alpha@example.com',
           type: 'nonce',
           // get single token, it MUST exist
