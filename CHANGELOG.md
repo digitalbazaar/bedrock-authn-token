@@ -13,6 +13,9 @@
 - **BREAKING**: If client registration was used in an application previously,
   clients will need to re-register because prefixed hashes are no longer used
   internally (to eliminate unnecessary complexity).
+- **BREAKING**: Store fast hashes of token values as binary data instead of
+  as base64 strings. This change should not require any database migration and
+  the code handles old values retrieved from the database that are strings.
 - Use of prefixed hashes is now deprecated and its configuration option
   (`hashPrefix`) will be removed in a future version. It is an unnecessary
   complexity that does not add security (given the other design choices).
