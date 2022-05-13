@@ -4,7 +4,6 @@
 import * as bedrock from '@bedrock/core';
 import * as brAccount from '@bedrock/account';
 import * as brAuthnToken from '@bedrock/authn-token';
-import bcrypt from 'bcrypt';
 import {prepareDatabase} from './helpers.js';
 import {mockData} from './mock.data.js';
 import sinon from 'sinon';
@@ -273,12 +272,16 @@ describe('Nonce API', () => {
       result.should.be.an('object');
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
-        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'hashAlgorithm', 'sha256', 'expires'
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id',
+        'hashParameters', 'sha256', 'expires'
       ]);
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
-      const hash = await bcrypt.hash(challenge, result.tokens[0].salt);
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({
+        secret: challenge,
+        iterations: result.tokens[0].hashParameters.params.i,
+        salt: result.tokens[0].hashParameters.salt
+      });
       // verify the nonce token
       let verifyResult;
       let err2;
@@ -286,7 +289,6 @@ describe('Nonce API', () => {
         verifyResult = await brAuthnToken.verify({
           accountId,
           type: 'nonce',
-          challenge,
           hash
         });
       } catch(e) {
@@ -312,7 +314,9 @@ describe('Nonce API', () => {
 
       const challenge = nonce.challenge;
       // make a different hash
-      const hash = await bcrypt.hash(challenge, 10);
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({
+        secret: challenge + 'different'
+      });
       // verify the nonce token
       let verifyResult;
       let err;
@@ -367,8 +371,8 @@ describe('Nonce API', () => {
       result.should.be.an('object');
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
-        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'hashAlgorithm', 'sha256', 'expires'
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id',
+        'hashParameters', 'sha256', 'expires'
       ]);
 
       // undo the stub
@@ -376,7 +380,9 @@ describe('Nonce API', () => {
 
       // get challenge from nonce and hash it using the same salt
       const challenge = nonce.challenge;
-      const hash = await bcrypt.hash(challenge, result.tokens[0].salt);
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({
+        secret: challenge, phc: result.tokens[0].hashParameters
+      });
 
       // verify the nonce token
       let verifyResult;
@@ -385,7 +391,6 @@ describe('Nonce API', () => {
         verifyResult = await brAuthnToken.verify({
           accountId,
           type: 'nonce',
-          challenge,
           hash
         });
       } catch(e) {
@@ -437,8 +442,8 @@ describe('Remove expired nonce', () => {
     result1.should.be.an('object');
     result1.tokens.should.be.an('array');
     result1.tokens[0].should.have.keys([
-      'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-      'hashAlgorithm', 'sha256', 'expires'
+      'authenticationMethod', 'requiredAuthenticationMethods', 'id',
+      'hashParameters', 'sha256', 'expires'
     ]);
     // undo the stub
     clock.restore();

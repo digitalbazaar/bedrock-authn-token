@@ -2,7 +2,6 @@
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
 import * as brAuthnToken from '@bedrock/authn-token';
-import bcrypt from 'bcrypt';
 import {prepareDatabase} from './helpers.js';
 import {mockData} from './mock.data.js';
 
@@ -18,7 +17,7 @@ describe('Password API', () => {
       let result;
       let err;
       try {
-        const hash = await bcrypt.hash('password', 10);
+        const {hash} = await brAuthnToken._pbkdf2.pbkdf2({secret: 'password'});
         result = await brAuthnToken.set({
           accountId,
           type: 'password',
@@ -75,7 +74,7 @@ describe('Password API', () => {
     it('should verify a valid password', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       // set a password for the account
-      const hash = await bcrypt.hash('password', 10);
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({secret: 'password'});
       const token = await brAuthnToken.set({
         accountId,
         type: 'password',
@@ -99,11 +98,13 @@ describe('Password API', () => {
       result.should.be.an('object');
       result.tokens.should.be.an('array');
       result.tokens[0].should.have.keys([
-        'authenticationMethod', 'requiredAuthenticationMethods', 'id', 'salt',
-        'hashAlgorithm', 'sha256'
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id',
+        'hashParameters', 'sha256'
       ]);
-      // get rehash password using the same salt
-      const hash2 = await bcrypt.hash('password', result.tokens[0].salt);
+      // get rehash password using the same parameters
+      const {hash: hash2} = await brAuthnToken._pbkdf2.pbkdf2({
+        secret: 'password', phc: result.tokens[0].hashParameters
+      });
       // verify the password token
       let verifyResult;
       let err2;
@@ -127,7 +128,7 @@ describe('Password API', () => {
     it('should return false if a different hash is passed', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       // set a password for the account
-      const hash = await bcrypt.hash('password', 10);
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({secret: 'password'});
       const token = await brAuthnToken.set({
         accountId,
         type: 'password',
@@ -137,8 +138,8 @@ describe('Password API', () => {
       token.should.have.keys(['type', 'id']);
 
       // make a different hash
-      const hash2 = await bcrypt.hash('foo', 10);
-      // verify the password token
+      const {hash: hash2} = await brAuthnToken._pbkdf2.pbkdf2({secret: 'foo'});
+      // try to verify the password token (should fail)
       let verifyResult;
       let err;
       try {

@@ -3,18 +3,29 @@
 ## 10.0.0 - 2022-05-xx
 
 ### Changed
-- **BREAKING**: Include `hashAlgorithm` in password and nonce tokens. This
+- **BREAKING**: Include `hashParameters` in password and nonce tokens. This
   change should be a mostly backwards compatible change but is marked breaking
   because it is a data structure change. However, if a token does not have a
-  `hashAlgorithm`, it is assumed to be `bcrypt`. Password / nonce hashing
-  must be performed on the client, so the hash algorithm is new information
-  to be sent to the client so it can produce a matching hash.
+  `hashParameters` property, it is assumed to be `bcrypt` and is internally
+  modified to add matching `hashParameters` before being returned. Password /
+  nonce hashing must be performed on the client, so the hash parameters are new
+  information to be sent to the client so it can produce a matching hash.
+- **BREAKING**: If client registration was used in an application previously,
+  clients will need to re-register because prefixed hashes are no longer used
+  internally (to eliminate unnecessary complexity).
+- Use of prefixed hashes is now deprecated and its configuration option
+  (`hashPrefix`) will be removed in a future version. It is an unnecessary
+  complexity that does not add security (given the other design choices).
 
 ### Removed
 - **BREAKING**: Remove database `explain` option from most public APIs.
 - **BREAKING**: Remove `challenge` `type`. This type was never implemented and
   can be confused with the option `challenge` which specifies an unhashed
   value to be provided when verifying a `totp` token.
+- **BREAKING**: Remove `bcrypt` from configuration and as an
+  internally-used slow hash function. Use `pbkdf2` instead because it is
+  widely available in clients, especially web browsers -- which is where
+  most slow hashing occurs given the current design.
 
 ## 9.0.0 - 2022-04-29
 

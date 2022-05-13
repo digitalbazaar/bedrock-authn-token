@@ -9,7 +9,7 @@ describe('pbkdf2 API', () => {
       algorithm, salt, derivedBits, hash, phc
     } = await brAuthnToken._pbkdf2.pbkdf2({
       iterations: 1000,
-      password: 'password',
+      secret: 'password',
       saltSize: 16
     });
     should.exist(algorithm);
@@ -27,7 +27,7 @@ describe('pbkdf2 API', () => {
   it('should roundtrip a pch object', async () => {
     const {phc, hash} = await brAuthnToken._pbkdf2.pbkdf2({
       iterations: 1000,
-      password: 'password',
+      secret: 'password',
       saltSize: 16
     });
     should.exist(phc);
