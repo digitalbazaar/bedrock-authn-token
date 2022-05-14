@@ -16,6 +16,10 @@
 - **BREAKING**: Store fast hashes of token values as binary data instead of
   as base64 strings. This change should not require any database migration and
   the code handles old values retrieved from the database that are strings.
+- **BREAKING**: Machine-entry style nonces are no longer slow hashed because it
+  is unnecessary complexity that does not add security. Nonces generated this
+  way and entered this way should be submitted as `challenge` to be verified,
+  not `hash`.
 - Use of prefixed hashes is now deprecated and its configuration option
   (`hashPrefix`) will be removed in a future version. It is an unnecessary
   complexity that does not add security (given the other design choices).

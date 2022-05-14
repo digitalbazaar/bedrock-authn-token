@@ -324,7 +324,6 @@ describe('Nonce API', () => {
         verifyResult = await brAuthnToken.verify({
           accountId,
           type: 'nonce',
-          challenge,
           hash
         });
       } catch(e) {
