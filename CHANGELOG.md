@@ -5,11 +5,13 @@
 ### Changed
 - **BREAKING**: Include `hashParameters` in password and nonce tokens. This
   change should be a mostly backwards compatible change but is marked breaking
-  because it is a data structure change. However, if a token does not have a
-  `hashParameters` property, it is assumed to be `bcrypt` and is internally
-  modified to add matching `hashParameters` before being returned. Password /
-  nonce hashing must be performed on the client, so the hash parameters are new
-  information to be sent to the client so it can produce a matching hash.
+  because it is a data structure change. However, if a password token does not
+  have a `hashParameters` property, it is assumed to be `bcrypt` and is
+  internally modified to add matching `hashParameters` before being returned.
+  If a nonce token does not have a `hashParameters` property, it is
+  auto-expired. Password / nonce hashing must be performed on the client, so
+  the hash parameters are new information to be sent to the client so it can
+  produce a matching hash.
 - **BREAKING**: If client registration was used in an application previously,
   clients will need to re-register because prefixed hashes are no longer used
   internally (to eliminate unnecessary complexity).
@@ -20,6 +22,7 @@
   is unnecessary complexity that does not add security. Nonces generated this
   way and entered this way should be submitted as `challenge` to be verified,
   not `hash`.
+- **BREAKING**: Auto-expires
 - Use of prefixed hashes is now deprecated and its configuration option
   (`hashPrefix`) will be removed in a future version. It is an unnecessary
   complexity that does not add security (given the other design choices).
