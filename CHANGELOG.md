@@ -22,7 +22,6 @@
   is unnecessary complexity that does not add security. Nonces generated this
   way and entered this way should be submitted as `challenge` to be verified,
   not `hash`.
-- **BREAKING**: Auto-expires
 - Use of prefixed hashes is now deprecated and its configuration option
   (`hashPrefix`) will be removed in a future version. It is an unnecessary
   complexity that does not add security (given the other design choices).
