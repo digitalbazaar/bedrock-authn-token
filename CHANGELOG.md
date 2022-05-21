@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 10.0.1 - 2022-05-xx
+## 10.0.1 - 2022-05-21
 
 ### Fixed
 - Fix bugs with token expiration code for legacy bcrypt tokens.
