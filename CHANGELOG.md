@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 10.0.2 - 2022-05-xx
+
+### Fixed
+- Fix salt reuse.
+
 ## 10.0.1 - 2022-05-21
 
 ### Fixed
