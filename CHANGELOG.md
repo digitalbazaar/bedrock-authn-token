@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 10.0.0 - 2022-05-xx
+## 10.0.0 - 2022-05-21
 
 ### Changed
 - **BREAKING**: Include `hashParameters` in password and nonce tokens. This
