@@ -75,9 +75,8 @@ describe('Nonce API', () => {
       result.challenge.should.be.a('string');
       result.challenge.should.match(/^\d{6}$/);
     });
-    it('should set a challenge of length 23 if "typeOptions.entryStyle" is ' +
-      'set to "machine"',
-    async () => {
+    it('should set a challenge of length 23 if "typeOptions.entryStyle" ' +
+      'is set to "machine"', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       let result;
       let err;
