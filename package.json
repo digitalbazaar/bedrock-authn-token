@@ -1,6 +1,6 @@
 {
   "name": "@bedrock/authn-token",
-  "version": "10.0.3-0",
+  "version": "10.1.0",
   "type": "module",
   "description": "Simple token-based authentication for Bedrock apps",
   "main": "./lib/index.js",
