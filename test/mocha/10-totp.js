@@ -3,7 +3,7 @@
  */
 import * as brAuthnToken from '@bedrock/authn-token';
 import * as helpers from './helpers.js';
-import {authenticator} from 'otplib';
+import * as totp from '@digitalbazaar/totp';
 import {mockData} from './mock.data.js';
 
 describe('TOTP API', () => {
@@ -108,7 +108,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should verify a valid token', async () => {
-      const challenge = authenticator.generate(secret);
+      const {token: challenge} = await totp.generateToken({secret});
       let err;
       let result;
       try {
@@ -129,8 +129,8 @@ describe('TOTP API', () => {
       });
     });
     it('should not verify an invalid token', async () => {
-      // an invalid random challenge string
-      const challenge = '91bc2849-2f43-4847-b5ad-01c0436b3a07';
+      // an invalid challenge string (wrong digit count)
+      const challenge = '0000000000';
       let err;
       let result;
       try {
@@ -165,7 +165,7 @@ describe('TOTP API', () => {
       }));
     });
     it('should delete a secret', async () => {
-      let challenge = authenticator.generate(secret);
+      let {token: challenge} = await totp.generateToken({secret});
       let err;
       let result;
       try {
@@ -198,7 +198,7 @@ describe('TOTP API', () => {
       should.not.exist(err);
 
       // attempt to validate the TOTP token again
-      challenge = authenticator.generate(secret);
+      ({token: challenge} = await totp.generateToken({secret}));
       err = null;
       result = null;
       try {

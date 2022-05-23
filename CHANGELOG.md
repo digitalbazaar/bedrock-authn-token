@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 10.1.0 - 2022-05-xx
+
+### Changed
+- Replace `otplib` with `@digitalbazaar/totp`.
+
 ## 10.0.2 - 2022-05-21
 
 ### Fixed
