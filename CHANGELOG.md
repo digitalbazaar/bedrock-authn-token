@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 10.2.0 - 2022-05-xx
+## 10.2.0 - 2022-05-28
 
 ### Added
 - Allow default `requiredAuthenticationMethods` to be configured via a new
