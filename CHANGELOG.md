@@ -1,5 +1,17 @@
 # bedrock-authn-token ChangeLog
 
+## 10.2.0 - 2022-05-xx
+
+### Added
+- Allow default `requiredAuthenticationMethods` to be configured via a new
+  bedrock configuration option `defaultRequiredAuthenticationMethods`. If
+  a non-empty array of strings is set as the config option value, then new
+  accounts that do not have any `requiredAuthenticationMethods` set will
+  receive the value. This feature is backwards compatible and makes no
+  changes by default. It enables applications to avoid having to make an
+  extra call during account registration to setup default required
+  authentication methods.
+
 ## 10.1.0 - 2022-05-22
 
 ### Changed
