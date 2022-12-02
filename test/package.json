@@ -10,10 +10,10 @@
     "coverage-report": "c8 report"
   },
   "dependencies": {
-    "@bedrock/account": "^8.0.0",
+    "@bedrock/account": "github:digitalbazaar/bedrock-account#use-mongo-driver-4-rc",
     "@bedrock/authn-token": "file:..",
     "@bedrock/core": "^6.0.0",
-    "@bedrock/mongodb": "^10.0.0",
+    "@bedrock/mongodb": "github:digitalbazaar/bedrock-mongodb#mongo-driver-4-rc-fix-duplicate-error",
     "@bedrock/test": "^8.0.0",
     "@bedrock/validation": "^7.0.0",
     "@digitalbazaar/totp": "^1.0.1",

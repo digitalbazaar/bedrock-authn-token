@@ -1,5 +1,12 @@
 # bedrock-authn-token ChangeLog
 
+## 11.0.0 -
+
+### Changed
+- **BREAKING**: Upgrade `@bedrock/mongodb@11` & `@bedrock/account@9`.
+- Various MongoDB related APIs were changed causing small, but potentially breaking
+  changes in some returns and queries.
+
 ## 10.2.0 - 2022-05-28
 
 ### Added
