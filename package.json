@@ -30,9 +30,9 @@
     "fast-json-patch": "^3.1.1"
   },
   "peerDependencies": {
-    "@bedrock/account": "^8.0.0",
+    "@bedrock/account": "^9.0.0",
     "@bedrock/core": "^6.0.0",
-    "@bedrock/mongodb": "^10.0.0"
+    "@bedrock/mongodb": "^11.0.0"
   },
   "directories": {
     "lib": "./lib"
