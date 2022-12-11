@@ -463,77 +463,68 @@ describe('Remove expired nonce', () => {
   });
 });
 
-describe('Nonce Database Tests', () => {
-  describe('Indexes', () => {
-    let accountId;
-    let nonce;
-    // NOTE: the accounts collection is getting erased before each test
-    // this allows for the creation of tokens using the same account info
-    beforeEach(async () => {
-      await prepareDatabase(mockData);
-      accountId = mockData.accounts['alpha@example.com'].account.id;
-      const accountId2 = mockData.accounts['beta@example.com'].account.id;
+describe('Nonce storage', () => {
+  let accountId;
+  let nonce;
+  // NOTE: the accounts collection is getting erased before each test
+  // this allows for the creation of tokens using the same account info
+  beforeEach(async () => {
+    await prepareDatabase(mockData);
+    accountId = mockData.accounts['alpha@example.com'].account.id;
+    const accountId2 = mockData.accounts['beta@example.com'].account.id;
 
-      // creates token
-      nonce = await brAuthnToken.set({
-        accountId,
-        type: 'nonce'
-      });
-      // second token is created here in order to do proper assertions for
-      // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
-      await brAuthnToken.set({
-        accountId: accountId2,
-        type: 'nonce'
-      });
+    // creates token
+    nonce = await brAuthnToken.set({
+      accountId,
+      type: 'nonce'
     });
-    describe('pushToken() for set()', () => {
-      it(`is properly indexed for 'id' and ` +
-        `'meta.bedrock-authn-token.tokens.nonce'`, async () => {
-        const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-        const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
-          accountId: accountId3,
-          type: 'nonce',
-          maxCount: 10,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email' and ` +
-        `'meta.bedrock-authn-token.tokens.nonce'`, async () => {
-        const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-        const record = await brAccount.get({id: accountId3});
-        const email = record.account.email;
-        const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
-          email,
-          type: 'nonce',
-          maxCount: 10,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
+    // second token is created here in order to do proper assertions for
+    // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
+    await brAuthnToken.set({
+      accountId: accountId2,
+      type: 'nonce'
     });
-    describe('removeToken() for remove()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {executionStats} = await brAuthnToken._tokenStorage.removeToken({
-          accountId,
-          type: 'nonce',
-          id: nonce.id,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
+  });
+  it('pushToken() for set() using id', async () => {
+    // FIXME: remove `explain`
+    const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+    const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
+      accountId: accountId3,
+      type: 'nonce',
+      maxCount: 10,
+      explain: true
     });
+    executionStats.nReturned.should.equal(1);
+    executionStats.totalKeysExamined.should.equal(1);
+    executionStats.totalDocsExamined.should.equal(1);
+    executionStats.executionStages.inputStage.inputStage.stage
+      .should.equal('IXSCAN');
+  });
+  it('pushToken() for set() using email', async () => {
+    // FIXME: remove `explain`
+    const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+    const record = await brAccount.get({id: accountId3});
+    const email = record.account.email;
+    const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
+      email,
+      type: 'nonce',
+      maxCount: 10,
+      explain: true
+    });
+    executionStats.nReturned.should.equal(1);
+    executionStats.totalKeysExamined.should.equal(1);
+    executionStats.totalDocsExamined.should.equal(1);
+    executionStats.executionStages.inputStage.inputStage.stage
+      .should.equal('IXSCAN');
+  });
+  it('removeToken() for remove()', async () => {
+    const result = await brAuthnToken._tokenStorage.removeToken({
+      accountId,
+      type: 'nonce',
+      id: nonce.id,
+      explain: true
+    });
+    should.exist(result);
+    result.should.equal(true);
   });
 });

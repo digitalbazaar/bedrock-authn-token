@@ -216,56 +216,48 @@ describe('TOTP API', () => {
   }); // end delete
 }); // end totp api
 
-describe('TOTP Database Tests', () => {
-  describe('Indexes', async () => {
-    let accountId;
-    // NOTE: the accounts collection is getting erased before each test
-    // this allows for the creation of tokens using the same account info
-    beforeEach(async () => {
-      await helpers.prepareDatabase(mockData);
-      accountId = mockData.accounts['alpha@example.com'].account.id;
-      const accountId2 = mockData.accounts['beta@example.com'].account.id;
+describe('TOTP storage', () => {
+  let accountId;
+  // NOTE: the accounts collection is getting erased before each test
+  // this allows for the creation of tokens using the same account info
+  beforeEach(async () => {
+    await helpers.prepareDatabase(mockData);
+    accountId = mockData.accounts['alpha@example.com'].account.id;
+    const accountId2 = mockData.accounts['beta@example.com'].account.id;
 
-      // creates token
-      await brAuthnToken.set({
-        accountId,
-        type: 'totp'
-      });
-      // second token is created here in order to do proper assertions for
-      // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
-      await brAuthnToken.set({
-        accountId: accountId2,
-        type: 'totp'
-      });
+    // creates token
+    await brAuthnToken.set({
+      accountId,
+      type: 'totp'
     });
-    describe('setToken() for set()', () => {
-      it(`is properly indexed for 'id' in setToken()`, async () => {
-        const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-        const {executionStats} = await brAuthnToken._tokenStorage.setToken({
-          accountId: accountId3,
-          type: 'totp',
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
+    // second token is created here in order to do proper assertions for
+    // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
+    await brAuthnToken.set({
+      accountId: accountId2,
+      type: 'totp'
     });
-    describe('removeToken() for remove()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {executionStats} = await brAuthnToken._tokenStorage.removeToken({
-          accountId,
-          type: 'totp',
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
+  });
+  it('setToken() for set() using id', async () => {
+    // FIXME: remove `explain`
+    const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+    const {executionStats} = await brAuthnToken._tokenStorage.setToken({
+      accountId: accountId3,
+      type: 'totp',
+      explain: true
     });
+    executionStats.nReturned.should.equal(1);
+    executionStats.totalKeysExamined.should.equal(1);
+    executionStats.totalDocsExamined.should.equal(1);
+    executionStats.executionStages.inputStage.inputStage.stage
+      .should.equal('IXSCAN');
+  });
+  it('removeToken() for remove()', async () => {
+    const result = await brAuthnToken._tokenStorage.removeToken({
+      accountId,
+      type: 'totp',
+      explain: true
+    });
+    should.exist(result);
+    result.should.equal(true);
   });
 });
