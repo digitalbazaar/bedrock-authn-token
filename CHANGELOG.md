@@ -1,5 +1,16 @@
 # bedrock-authn-token ChangeLog
 
+## 10.3.0 - 2022-12-dd
+
+### Changed
+- Require `@bedrock/account@8.3` to get latest update API features.
+- Use `@bedrock/account` APIs internally to reduce possibility for
+  breakage if the internals of `@bedrock/account` change.
+
+### Removed
+- Non-breaking removal of internal `explain` flags from APIs that
+  were directly accessing `@bedrock/account` database collections.
+
 ## 10.2.0 - 2022-05-28
 
 ### Added

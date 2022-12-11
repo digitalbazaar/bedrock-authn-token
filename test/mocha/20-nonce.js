@@ -535,20 +535,5 @@ describe('Nonce Database Tests', () => {
           .should.equal('IXSCAN');
       });
     });
-    it(`is properly indexed for 'id' in setAuthenticationRequirements()`,
-      async () => {
-        const requiredAuthenticationMethods = [];
-        const {executionStats} = await brAuthnToken
-          .setAuthenticationRequirements({
-            accountId,
-            requiredAuthenticationMethods,
-            explain: true
-          });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
   });
 });
