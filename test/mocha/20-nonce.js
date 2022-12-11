@@ -407,7 +407,7 @@ describe('Remove expired nonce', () => {
   beforeEach(async () => {
     await prepareDatabase(mockData);
   });
-  it('should remove an expired nonce', async () => {
+  it('should not return an expired nonce', async () => {
     const accountId = mockData.accounts['alpha@example.com'].account.id;
     // set a token with an older date.
     const yesterday = new Date();
@@ -446,7 +446,7 @@ describe('Remove expired nonce', () => {
     // undo the stub
     clock.restore();
     // get all existing nonce for the same account again after undoing the stub,
-    // it should give an empty array as getAll drops any expired token.
+    // it should give an empty array as getAll drops any expired token
     let result2;
     try {
       result2 = await brAuthnToken.getAll({
@@ -460,6 +460,127 @@ describe('Remove expired nonce', () => {
     should.exist(result2);
     result2.should.be.an('object');
     result2.tokens.should.eql([]);
+  });
+  it('should remove all expired nonces from storage', async () => {
+    const accountId = mockData.accounts['alpha@example.com'].account.id;
+    // set some tokens with an older date
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const clock = sinon.useFakeTimers(yesterday.getTime());
+    let nonce1;
+    {
+      let err;
+      try {
+        nonce1 = await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(nonce1);
+    }
+    let nonce2;
+    {
+      let err;
+      try {
+        nonce2 = await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(nonce2);
+    }
+    // undo the stub
+    clock.restore();
+    // should remove expired nonces
+    const result1 = await brAuthnToken._tokenStorage.removeExpiredTokens({
+      accountId, type: 'nonce'
+    });
+    should.exist(result1);
+    result1.should.equal(true);
+    // get all existing nonce for the same account again after undoing the stub,
+    // it should give an empty array
+    let result2;
+    let err;
+    try {
+      result2 = await brAuthnToken.getAll({
+        accountId,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(result2);
+    result2.should.be.an('object');
+    result2.tokens.should.eql([]);
+    result2.allTokens.should.eql([]);
+  });
+  it('should remove one expired nonce from storage', async () => {
+    const accountId = mockData.accounts['alpha@example.com'].account.id;
+    // set a nonce with current date (non-expired)
+    let nonce1;
+    {
+      let err;
+      try {
+        nonce1 = await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(nonce1);
+    }
+    // set a token with an older date
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const clock = sinon.useFakeTimers(yesterday.getTime());
+    let nonce2;
+    {
+      let err;
+      try {
+        nonce2 = await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(nonce2);
+    }
+    // undo the stub
+    clock.restore();
+    // should remove one expired nonce
+    const result1 = await brAuthnToken._tokenStorage.removeExpiredTokens({
+      accountId, type: 'nonce'
+    });
+    should.exist(result1);
+    result1.should.equal(true);
+    // get all existing nonce for the same account again after undoing the stub,
+    // it should give an empty array as getAll drops any expired token.
+    let result2;
+    let err;
+    try {
+      result2 = await brAuthnToken.getAll({
+        accountId,
+        type: 'nonce',
+      });
+    } catch(e) {
+      err = e;
+    }
+    assertNoError(err);
+    should.exist(result2);
+    result2.should.be.an('object');
+    should.exist(result2.tokens[0]);
+    result2.tokens[0].id.should.eql(nonce1.id);
   });
 });
 
