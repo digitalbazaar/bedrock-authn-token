@@ -253,74 +253,6 @@ describe('TOTP Database Tests', () => {
           .should.equal('IXSCAN');
       });
     });
-    describe('getAccountRecord() for get()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'totp',
-          // token must exist
-          requireToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'totp',
-          // token must exist
-          requireToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
-    describe('getAccountRecord() for getAll()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'totp',
-          // getAll
-          requireToken: false,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'totp',
-          // getAll
-          requireToken: false,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
     describe('removeToken() for remove()', () => {
       it(`is properly indexed for 'id'`, async () => {
         const {executionStats} = await brAuthnToken._tokenStorage.removeToken({
@@ -332,40 +264,6 @@ describe('TOTP Database Tests', () => {
         executionStats.totalKeysExamined.should.equal(1);
         executionStats.totalDocsExamined.should.equal(1);
         executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
-    describe('getAccountRecord() for verify()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'totp',
-          // token must exist
-          requiredToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'totp',
-          // token must exist
-          requiredToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
           .should.equal('IXSCAN');
       });
     });

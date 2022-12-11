@@ -520,74 +520,6 @@ describe('Nonce Database Tests', () => {
           .should.equal('IXSCAN');
       });
     });
-    describe('getAccountRecord() for get()', () => {
-      it(`is properly indexed for 'id' and ` +
-        `'meta.bedrock-authn-token.tokens.nonce.id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'nonce',
-          id: nonce.id,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email' and ` +
-        `'meta.bedrock-authn-token.tokens.nonce.id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'nonce',
-          id: nonce.id,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
-    describe('getAccountRecord() for getAll()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'nonce',
-          // getAll
-          requireToken: false,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'nonce',
-          // getAll
-          requireToken: false,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
     describe('removeToken() for remove()', () => {
       it(`is properly indexed for 'id'`, async () => {
         const {executionStats} = await brAuthnToken._tokenStorage.removeToken({
@@ -600,40 +532,6 @@ describe('Nonce Database Tests', () => {
         executionStats.totalKeysExamined.should.equal(1);
         executionStats.totalDocsExamined.should.equal(1);
         executionStats.executionStages.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-    });
-    describe('getAccountRecord() for verify()', () => {
-      it(`is properly indexed for 'id'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          accountId,
-          type: 'nonce',
-          // get single token, it MUST exist
-          requireToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
-          .should.equal('IXSCAN');
-      });
-      it(`is properly indexed for 'account.email'`, async () => {
-        const {
-          executionStats
-        } = await brAuthnToken._tokenStorage.getAccountRecord({
-          email: 'alpha@example.com',
-          type: 'nonce',
-          // get single token, it MUST exist
-          requireToken: true,
-          explain: true
-        });
-        executionStats.nReturned.should.equal(1);
-        executionStats.totalKeysExamined.should.equal(1);
-        executionStats.totalDocsExamined.should.equal(1);
-        executionStats.executionStages.inputStage.inputStage.inputStage.stage
           .should.equal('IXSCAN');
       });
     });
