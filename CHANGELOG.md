@@ -3,7 +3,7 @@
 ## 10.3.0 - 2022-12-dd
 
 ### Changed
-- Require `@bedrock/account@8.3` to get latest update API features.
+- Require `@bedrock/account@8.2` to get latest update API features.
 - Use `@bedrock/account` APIs internally to reduce possibility for
   breakage if the internals of `@bedrock/account` change.
 
