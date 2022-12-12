@@ -1,6 +1,7 @@
 /*!
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
+import * as brAccount from '@bedrock/account';
 import * as brAuthnToken from '@bedrock/authn-token';
 import * as helpers from './helpers.js';
 import * as totp from '@digitalbazaar/totp';
@@ -223,41 +224,34 @@ describe('TOTP storage', () => {
   beforeEach(async () => {
     await helpers.prepareDatabase(mockData);
     accountId = mockData.accounts['alpha@example.com'].account.id;
-    const accountId2 = mockData.accounts['beta@example.com'].account.id;
 
     // creates token
     await brAuthnToken.set({
       accountId,
       type: 'totp'
     });
-    // second token is created here in order to do proper assertions for
-    // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
-    await brAuthnToken.set({
-      accountId: accountId2,
-      type: 'totp'
-    });
   });
   it('setToken() for set() using id', async () => {
-    // FIXME: remove `explain`
     const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-    const {executionStats} = await brAuthnToken._tokenStorage.setToken({
+    const result = await brAuthnToken._tokenStorage.setToken({
       accountId: accountId3,
       type: 'totp',
-      explain: true
+      token: {id: '1'}
     });
-    executionStats.nReturned.should.equal(1);
-    executionStats.totalKeysExamined.should.equal(1);
-    executionStats.totalDocsExamined.should.equal(1);
-    executionStats.executionStages.inputStage.inputStage.stage
-      .should.equal('IXSCAN');
+    should.exist(result);
+    result.should.equal(true);
+    const record2 = await brAccount.get({id: accountId3});
+    should.exist(record2.meta['bedrock-authn-token']?.tokens?.totp?.id);
+    record2.meta['bedrock-authn-token']?.totp?.id.should.equal('1');
   });
   it('removeToken() for remove()', async () => {
     const result = await brAuthnToken._tokenStorage.removeToken({
       accountId,
-      type: 'totp',
-      explain: true
+      type: 'totp'
     });
     should.exist(result);
     result.should.equal(true);
+    const record2 = await brAccount.get({id: accountId});
+    should.not.exist(record2.meta['bedrock-authn-token']?.tokens?.totp);
   });
 });
