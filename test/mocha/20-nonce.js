@@ -4,8 +4,8 @@
 import * as bedrock from '@bedrock/core';
 import * as brAccount from '@bedrock/account';
 import * as brAuthnToken from '@bedrock/authn-token';
-import {prepareDatabase} from './helpers.js';
 import {mockData} from './mock.data.js';
+import {prepareDatabase} from './helpers.js';
 import sinon from 'sinon';
 
 describe('Nonce API', () => {

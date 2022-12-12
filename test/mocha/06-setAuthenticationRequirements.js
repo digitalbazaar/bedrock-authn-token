@@ -3,8 +3,8 @@
  */
 import * as brAccount from '@bedrock/account';
 import * as brAuthnToken from '@bedrock/authn-token';
-import {prepareDatabase} from './helpers.js';
 import {mockData} from './mock.data.js';
+import {prepareDatabase} from './helpers.js';
 
 describe('setAuthenticationRequirements API', () => {
   // NOTE: the accounts collection is getting erased before each test

@@ -2,8 +2,8 @@
  * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
  */
 import * as brAuthnToken from '@bedrock/authn-token';
-import {prepareDatabase} from './helpers.js';
 import {mockData} from './mock.data.js';
+import {prepareDatabase} from './helpers.js';
 
 describe('Password API', () => {
   describe('set', () => {
