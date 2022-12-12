@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 10.3.0 - 2022-12-dd
+## 10.3.0 - 2022-12-11
 
 ### Changed
 - Require `@bedrock/account@8.2` to get latest update API features.
