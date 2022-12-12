@@ -31,8 +31,7 @@
   },
   "peerDependencies": {
     "@bedrock/account": "^8.2.0",
-    "@bedrock/core": "^6.0.0",
-    "@bedrock/mongodb": "^10.0.0"
+    "@bedrock/core": "^6.0.0"
   },
   "directories": {
     "lib": "./lib"

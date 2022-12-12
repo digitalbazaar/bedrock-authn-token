@@ -10,6 +10,8 @@
 ### Removed
 - Non-breaking removal of internal `explain` flags from APIs that
   were directly accessing `@bedrock/account` database collections.
+- Non-breaking removal of peer dependency on `@bedrock/mongodb` because
+  the database is no longer directly accessed.
 
 ## 10.2.0 - 2022-05-28
 
