@@ -1,5 +1,10 @@
 # bedrock-authn-token ChangeLog
 
+## 10.3.1 - 2022-12-dd
+
+### Fixed
+- Ensure account ID is passed to update when updating clients.
+
 ## 10.3.0 - 2022-12-11
 
 ### Changed
