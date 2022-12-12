@@ -592,60 +592,91 @@ describe('Nonce storage', () => {
   beforeEach(async () => {
     await prepareDatabase(mockData);
     accountId = mockData.accounts['alpha@example.com'].account.id;
-    const accountId2 = mockData.accounts['beta@example.com'].account.id;
 
     // creates token
     nonce = await brAuthnToken.set({
       accountId,
       type: 'nonce'
     });
-    // second token is created here in order to do proper assertions for
-    // 'nReturned', 'totalKeysExamined' and 'totalDocsExamined'.
-    await brAuthnToken.set({
-      accountId: accountId2,
-      type: 'nonce'
-    });
   });
   it('pushToken() for set() using id', async () => {
-    // FIXME: remove `explain`
     const accountId3 = mockData.accounts['gamma@example.com'].account.id;
-    const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
+
+    // push first nonce
+    const result = await brAuthnToken._tokenStorage.pushToken({
       accountId: accountId3,
       type: 'nonce',
-      maxCount: 10,
-      explain: true
+      token: {id: '1'},
+      maxCount: 10
     });
-    executionStats.nReturned.should.equal(1);
-    executionStats.totalKeysExamined.should.equal(1);
-    executionStats.totalDocsExamined.should.equal(1);
-    executionStats.executionStages.inputStage.inputStage.stage
-      .should.equal('IXSCAN');
+    should.exist(result);
+    result.should.equal(true);
+    const record2 = await brAccount.get({id: accountId3});
+    should.exist(record2.meta['bedrock-authn-token']?.tokens?.nonce?.[0]);
+
+    // push another nonce
+    const result2 = await brAuthnToken._tokenStorage.pushToken({
+      accountId: accountId3,
+      type: 'nonce',
+      token: {id: '2'},
+      maxCount: 10
+    });
+    should.exist(result2);
+    result2.should.equal(true);
+    const record3 = await brAccount.get({id: accountId3});
+    should.exist(record3.meta['bedrock-authn-token']?.tokens?.nonce?.[0]);
+    should.exist(record3.meta['bedrock-authn-token']?.tokens?.nonce?.[1]);
   });
   it('pushToken() for set() using email', async () => {
-    // FIXME: remove `explain`
     const accountId3 = mockData.accounts['gamma@example.com'].account.id;
+
+    // push first nonce
     const record = await brAccount.get({id: accountId3});
     const email = record.account.email;
-    const {executionStats} = await brAuthnToken._tokenStorage.pushToken({
+    const result = await brAuthnToken._tokenStorage.pushToken({
       email,
       type: 'nonce',
-      maxCount: 10,
-      explain: true
+      token: {id: '1'},
+      maxCount: 10
     });
-    executionStats.nReturned.should.equal(1);
-    executionStats.totalKeysExamined.should.equal(1);
-    executionStats.totalDocsExamined.should.equal(1);
-    executionStats.executionStages.inputStage.inputStage.stage
-      .should.equal('IXSCAN');
+    should.exist(result);
+    result.should.equal(true);
+    const record2 = await brAccount.get({id: accountId3});
+    should.exist(record2.meta['bedrock-authn-token']?.tokens?.nonce?.[0]);
+
+    // push another nonce
+    const result2 = await brAuthnToken._tokenStorage.pushToken({
+      email,
+      type: 'nonce',
+      token: {id: '2'},
+      maxCount: 10
+    });
+    should.exist(result2);
+    result2.should.equal(true);
+    const record3 = await brAccount.get({id: accountId3});
+    should.exist(record3.meta['bedrock-authn-token']?.tokens?.nonce?.[0]);
+    should.exist(record3.meta['bedrock-authn-token']?.tokens?.nonce?.[1]);
+
+    // remove first nonce
+    await brAuthnToken._tokenStorage.removeToken({
+      accountId: record.account.id,
+      type: 'nonce',
+      id: '1'
+    });
+    const record4 = await brAccount.get({id: accountId3});
+    should.exist(record4.meta['bedrock-authn-token']?.tokens?.nonce?.[0]?.id);
+    record4.meta['bedrock-authn-token']
+      ?.tokens?.nonce?.[0]?.id.should.equal('2');
   });
   it('removeToken() for remove()', async () => {
     const result = await brAuthnToken._tokenStorage.removeToken({
       accountId,
       type: 'nonce',
-      id: nonce.id,
-      explain: true
+      id: nonce.id
     });
     should.exist(result);
     result.should.equal(true);
+    const record2 = await brAccount.get({id: accountId});
+    should.not.exist(record2.meta['bedrock-authn-token']?.tokens?.nonce);
   });
 });
