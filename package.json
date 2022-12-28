@@ -26,8 +26,7 @@
   "dependencies": {
     "@digitalbazaar/totp": "^1.0.1",
     "assert-plus": "^1.0.0",
-    "bnid": "^3.0.0",
-    "fast-json-patch": "^3.1.1"
+    "bnid": "^3.0.0"
   },
   "peerDependencies": {
     "@bedrock/account": "^8.2.0",
