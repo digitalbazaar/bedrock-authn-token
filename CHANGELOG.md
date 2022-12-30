@@ -1,5 +1,14 @@
 # bedrock-authn-token ChangeLog
 
+## 10.4.0 - 2022-12-dd
+
+### Changed
+- Change internal use of `update` API for modifying accounts to
+  use replacement vs. `patch` API. This change should have no
+  impact on the API and should ease the transition to a new
+  `@bedrock/account` version that no longer supports the `patch`
+  API.
+
 ## 10.3.1 - 2022-12-11
 
 ### Fixed
