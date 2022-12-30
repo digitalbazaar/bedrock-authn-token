@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 10.4.0 - 2022-12-dd
+## 10.4.0 - 2022-12-30
 
 ### Changed
 - Change internal use of `update` API for modifying accounts to
