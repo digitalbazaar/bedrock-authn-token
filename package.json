@@ -29,7 +29,7 @@
     "bnid": "^3.0.0"
   },
   "peerDependencies": {
-    "@bedrock/account": "^8.2.0",
+    "@bedrock/account": "^9.0.0",
     "@bedrock/core": "^6.0.0"
   },
   "directories": {
