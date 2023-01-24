@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 11.0.0 - 2023-01-dd
+## 11.0.0 - 2023-01-24
 
 ### Changed
 - **BREAKING**: Use `@bedrock/account@9`. This update changes the database
