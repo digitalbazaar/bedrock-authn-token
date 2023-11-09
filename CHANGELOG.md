@@ -1,11 +1,11 @@
 # bedrock-authn-token ChangeLog
 
-## 11.1.0 - 2023-11-dd
+## 11.1.0 - 2023-11-09
 
 ### Added
 - Add feature to enable tester accounts to authenticate into systems using
-  static challenges. If the `nonce.testerAccounts` array is populated with
-  one or more objects with `id` and / or `email` set to tester account
+  static challenges. If the `nonce.testerAccounts` config array is populated
+  with one or more objects with `id` and / or `email` set to tester account
   values, then if either of these value is used to create a nonce token,
   the challenge will always be a static `000000`.
 
