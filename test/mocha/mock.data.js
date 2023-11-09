@@ -8,7 +8,7 @@ const accounts = mockData.accounts = {};
 
 const emails = [
   'alpha@example.com', 'beta@example.com', 'gamma@example.com',
-  'tester@example.com'
+  'tester@example.com', 'tester-email-only@example.com'
 ];
 for(const email of emails) {
   accounts[email] = {};

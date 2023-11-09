@@ -417,6 +417,64 @@ describe('Nonce API', () => {
         token: {type: 'nonce', authenticationMethod: 'nonce'}
       });
     });
+    it('should verify a tester email (only) valid nonce', async () => {
+      const email = 'tester-email-only@example.com';
+      const accountId = mockData.accounts[email].account.id;
+      // set a nonce for the account
+      const nonce = await brAuthnToken.set({
+        email,
+        type: 'nonce'
+      });
+      should.exist(nonce);
+      nonce.should.have.keys(['type', 'id', 'challenge']);
+      // getAll nonce for the account
+      let result;
+      let err;
+      try {
+        result = await brAuthnToken.getAll({
+          accountId,
+          type: 'nonce',
+        });
+      } catch(e) {
+        err = e;
+      }
+      assertNoError(err);
+      should.exist(result);
+      result.should.be.an('object');
+      result.tokens.should.be.an('array');
+      result.tokens[0].should.have.keys([
+        'authenticationMethod', 'requiredAuthenticationMethods', 'id',
+        'hashParameters', 'sha256', 'expires'
+      ]);
+      // get challenge from nonce and hash it using the same salt
+      const challenge = nonce.challenge;
+      // ensure challenge is tester challenge: `000000`
+      challenge.should.equal('000000');
+      const {hash} = await brAuthnToken._pbkdf2.pbkdf2({
+        secret: challenge,
+        iterations: result.tokens[0].hashParameters.params.i,
+        salt: result.tokens[0].hashParameters.salt
+      });
+      // verify the nonce token
+      let verifyResult;
+      let err2;
+      try {
+        verifyResult = await brAuthnToken.verify({
+          email,
+          type: 'nonce',
+          hash
+        });
+      } catch(e) {
+        err2 = e;
+      }
+      assertNoError(err2);
+      should.exist(verifyResult);
+      verifyResult.should.eql({
+        id: accountId,
+        email: 'tester-email-only@example.com',
+        token: {type: 'nonce', authenticationMethod: 'nonce'}
+      });
+    });
     it('should return false if a different hash is passed', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       // set a nonce for the account

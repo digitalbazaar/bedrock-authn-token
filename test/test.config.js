@@ -15,6 +15,8 @@ config.mocha.tests.push(path.join(__dirname, 'mocha'));
 config['authn-token'].nonce.testerAccounts = [{
   id: 'urn:uuid:a1fa7222-a019-440a-8f27-302d448f1c4d',
   email: 'tester@example.com'
+}, {
+  email: 'tester-email-only@example.com'
 }];
 
 // MongoDB
