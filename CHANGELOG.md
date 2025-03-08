@@ -1,5 +1,15 @@
 # bedrock-authn-token ChangeLog
 
+## 12.0.0 - 2025-03-xx
+
+### Changed
+- Update peer dependencies.
+  - **BREAKING**: `@bedrock/account@10`.
+    - Updated for `@bedrock/mongodb@11`.
+  - `@bedrock/core@6.3.0`.
+- Update dev dependencies.
+- Update test dependencies.
+
 ## 11.1.0 - 2023-11-09
 
 ### Added
