@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 12.0.0 - 2025-03-xx
+## 12.0.0 - 2025-03-07
 
 ### Changed
 - Update peer dependencies.
