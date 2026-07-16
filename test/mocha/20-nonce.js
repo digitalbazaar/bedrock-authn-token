@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2018-2023 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2018-2026 Digital Bazaar, Inc. All rights reserved.
  */
 import * as bedrock from '@bedrock/core';
 import * as brAccount from '@bedrock/account';
@@ -238,6 +238,49 @@ describe('Nonce API', () => {
       });
       should.exist(result);
       result.id.should.equal(nonce1.id);
+    });
+    it('should include "requestOrigin" in the notify event', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const events = [];
+      const listener = event => events.push(event);
+      bedrock.events.on('bedrock-authn-token.notify', listener);
+      try {
+        await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+          requestOrigin: 'https://wallet.example'
+        });
+      } finally {
+        bedrock.events.removeListener('bedrock-authn-token.notify', listener);
+      }
+      events.length.should.equal(1);
+      const [event] = events;
+      event.requestOrigin.should.equal('https://wallet.example');
+      // the rest of the event contract is unchanged
+      should.exist(event.token);
+      event.token.type.should.equal('nonce');
+      event.authenticationMethod.should.equal('nonce');
+    });
+    it('should not include "requestOrigin" in the notify event', async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const events = [];
+      const listener = event => events.push(event);
+      bedrock.events.on('bedrock-authn-token.notify', listener);
+      try {
+        await brAuthnToken.set({
+          accountId,
+          type: 'nonce',
+        });
+      } finally {
+        bedrock.events.removeListener('bedrock-authn-token.notify', listener);
+      }
+      events.length.should.equal(1);
+      const [event] = events;
+      should.not.exist(event.requestOrigin);
+      // the rest of the event contract is unchanged
+      should.exist(event.token);
+      event.token.type.should.equal('nonce');
+      event.authenticationMethod.should.equal('nonce');
     });
   });
   describe('verify', () => {
