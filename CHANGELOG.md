@@ -1,5 +1,12 @@
 # bedrock-authn-token ChangeLog
 
+## 12.1.0 - 2026-07-dd
+
+### Added
+- Add optional `requestOrigin` option to `set()` and `setRecoveryEmail()`; when
+  given, it is included in the `bedrock-authn-token.notify` and
+  `bedrock-authn-token.recoveryEmail.change` events.
+
 ## 12.0.0 - 2025-03-07
 
 ### Changed

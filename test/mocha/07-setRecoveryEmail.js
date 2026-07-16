@@ -1,6 +1,7 @@
 /*!
- * Copyright (c) 2018-2023 Digital Bazaar, Inc. All rights reserved.
+ * Copyright (c) 2018-2026 Digital Bazaar, Inc. All rights reserved.
  */
+import * as bedrock from '@bedrock/core';
 import * as brAccount from '@bedrock/account';
 import * as brAuthnToken from '@bedrock/authn-token';
 import {mockData} from './mock.data.js';
@@ -32,4 +33,29 @@ describe('setRecoveryEmail API', () => {
     should.exist(recoveryEmail);
     recoveryEmail.should.equal(expectedRecoveryEmail);
   });
+  it('should include "requestOrigin" in the recoveryEmail.change event',
+    async () => {
+      const accountId = mockData.accounts['alpha@example.com'].account.id;
+      const expectedRecoveryEmail = 'alpha-recovery@example.com';
+      const events = [];
+      const listener = event => events.push(event);
+      bedrock.events.on('bedrock-authn-token.recoveryEmail.change', listener);
+      try {
+        await brAuthnToken.setRecoveryEmail({
+          accountId,
+          requestOrigin: 'https://wallet.example',
+          recoveryEmail: expectedRecoveryEmail
+        });
+      } finally {
+        bedrock.events.removeListener(
+          'bedrock-authn-token.recoveryEmail.change',
+          listener
+        );
+      }
+      events.length.should.equal(1);
+      const [event] = events;
+      event.email.should.equal('alpha@example.com');
+      event.requestOrigin.should.equal('https://wallet.example');
+      event.newRecoveryEmail.should.equal(expectedRecoveryEmail);
+    });
 });
