@@ -33,7 +33,7 @@ describe('setRecoveryEmail API', () => {
     should.exist(recoveryEmail);
     recoveryEmail.should.equal(expectedRecoveryEmail);
   });
-  it('should include "requestOrigin" in the recoveryEmail.change event',
+  it('should include "authenticationOrigin" in the recoveryEmail.change event',
     async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const expectedRecoveryEmail = 'alpha-recovery@example.com';
@@ -43,7 +43,7 @@ describe('setRecoveryEmail API', () => {
       try {
         await brAuthnToken.setRecoveryEmail({
           accountId,
-          requestOrigin: 'https://wallet.example',
+          authenticationOrigin: 'https://wallet.example',
           recoveryEmail: expectedRecoveryEmail
         });
       } finally {
@@ -55,7 +55,7 @@ describe('setRecoveryEmail API', () => {
       events.length.should.equal(1);
       const [event] = events;
       event.email.should.equal('alpha@example.com');
-      event.requestOrigin.should.equal('https://wallet.example');
+      event.authenticationOrigin.should.equal('https://wallet.example');
       event.newRecoveryEmail.should.equal(expectedRecoveryEmail);
     });
 });
