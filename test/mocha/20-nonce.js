@@ -239,7 +239,7 @@ describe('Nonce API', () => {
       should.exist(result);
       result.id.should.equal(nonce1.id);
     });
-    it('should include "requestOrigin" in the notify event', async () => {
+    it('should include "authenticationOrigin" in the event', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const events = [];
       const listener = event => events.push(event);
@@ -248,20 +248,20 @@ describe('Nonce API', () => {
         await brAuthnToken.set({
           accountId,
           type: 'nonce',
-          requestOrigin: 'https://wallet.example'
+          authenticationOrigin: 'https://wallet.example'
         });
       } finally {
         bedrock.events.removeListener('bedrock-authn-token.notify', listener);
       }
       events.length.should.equal(1);
       const [event] = events;
-      event.requestOrigin.should.equal('https://wallet.example');
+      event.authenticationOrigin.should.equal('https://wallet.example');
       // the rest of the event contract is unchanged
       should.exist(event.token);
       event.token.type.should.equal('nonce');
       event.authenticationMethod.should.equal('nonce');
     });
-    it('should not include "requestOrigin" in the notify event', async () => {
+    it('should not include "authenticationOrigin" in the event', async () => {
       const accountId = mockData.accounts['alpha@example.com'].account.id;
       const events = [];
       const listener = event => events.push(event);
@@ -276,7 +276,7 @@ describe('Nonce API', () => {
       }
       events.length.should.equal(1);
       const [event] = events;
-      should.not.exist(event.requestOrigin);
+      should.not.exist(event.authenticationOrigin);
       // the rest of the event contract is unchanged
       should.exist(event.token);
       event.token.type.should.equal('nonce');
