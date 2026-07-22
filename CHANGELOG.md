@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 12.1.0 - 2026-07-dd
+## 12.1.0 - 2026-07-22
 
 ### Added
 - Add optional `authenticationOrigin` option to `set()` and
