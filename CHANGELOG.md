@@ -1,5 +1,12 @@
 # bedrock-authn-token ChangeLog
 
+## 12.1.1 - 2026-08-13
+
+### Fixed
+- Fix `verify()` to pass `accountId` (not `account`) to the internal
+  `remove()` helper, so a nonce token is actually deleted after a
+  successful login instead of silently failing to be removed.
+
 ## 12.1.0 - 2026-07-22
 
 ### Added
