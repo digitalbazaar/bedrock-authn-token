@@ -1,6 +1,6 @@
 # bedrock-authn-token ChangeLog
 
-## 12.1.1 - 2026-08-dd
+## 12.1.1 - 2026-08-18
 
 ### Fixed
 - Fix `verify()` to pass `accountId` (not `account`) to the internal
